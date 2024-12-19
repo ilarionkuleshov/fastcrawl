@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "fastcrawl"
+version = "0.1.0"
+description = "Fast and asynchronous web crawling and scraping library for Python."
+authors = ["ilarionkuleshov <ilarion.kuleshov@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+httpx = "^0.28.1"
+
+[tool.poetry.group.dev.dependencies]
+isort = "^5.13.2"
+autoflake = "^2.3.1"
+black = "^24.10.0"
+flake8 = "^7.1.1"
+flake8-pyproject = "^1.2.3"
+pylint = "^3.3.2"
+mypy = "^1.13.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+
+[tool.autoflake]
+remove-all-unused-imports = true
+recursive = true
+remove-unused-variables = true
+ignore-init-module-imports = true
+in-place = true
+
+[tool.black]
+line-length = 120
+
+[tool.flake8]
+max-line-length = 120
+
+[tool.pylint]
+py-version = "3.12"
+max-line-length = 120

@@ -1,5 +1,13 @@
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any, AsyncIterator, Callable, Sequence, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    AsyncIterator,
+    Awaitable,
+    Callable,
+    Sequence,
+    Union,
+)
 
 from httpx import URL
 from pydantic import BaseModel, ConfigDict
@@ -8,7 +16,7 @@ if TYPE_CHECKING:
     from fastcrawl.models.response import Response
 
 PrimitiveData = str | int | float | bool | None
-RequestCallback = Callable[["Response"], AsyncIterator[Union[BaseModel, "Request"]]]
+RequestCallback = Callable[["Response"], Awaitable[AsyncIterator[Union[BaseModel, "Request"]]]]
 
 
 class Request(BaseModel):
@@ -27,7 +35,7 @@ class Request(BaseModel):
         files (dict[str, bytes] | None): Files for the request. Default is None.
         auth (tuple[str, str] | None): Authentication credentials. Default is None.
         timeout (timedelta | None): Timeout for the request. Default is None.
-        follow_redirects (bool): Whether to follow redirects. Default is True.
+        follow_redirects (bool | None): Whether to follow redirects. Default is True.
 
     """
 
@@ -42,6 +50,9 @@ class Request(BaseModel):
     files: dict[str, bytes] | None = None
     auth: tuple[str, str] | None = None
     timeout: timedelta | None = None
-    follow_redirects: bool = True
+    follow_redirects: bool | None = True
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}({self.method}, {self.url})>"

@@ -1,10 +1,14 @@
 from datetime import timedelta
-from typing import Any, Callable, Sequence
+from typing import TYPE_CHECKING, Any, AsyncIterator, Callable, Sequence, Union
 
 from httpx import URL
 from pydantic import BaseModel, ConfigDict
 
+if TYPE_CHECKING:
+    from fastcrawl.models.response import Response
+
 PrimitiveData = str | int | float | bool | None
+RequestCallback = Callable[["Response"], AsyncIterator[Union[BaseModel, "Request"]]]
 
 
 class Request(BaseModel):
@@ -13,6 +17,7 @@ class Request(BaseModel):
     Attributes:
         method (str): HTTP method. Default is "GET".
         url (URL | str): URL to request.
+        callback (RequestCallback): Callback to handle the response.
         query_params (dict[str, PrimitiveData, Sequence[PrimitiveData]] | None): Query parameters
             for the URL. Default is None.
         headers (dict[str, str] | None): Headers for the request. Default is None.
@@ -28,7 +33,7 @@ class Request(BaseModel):
 
     method: str = "GET"
     url: URL | str
-    callback: Callable  # TODO: improve type hint
+    callback: RequestCallback
     query_params: dict[str, PrimitiveData | Sequence[PrimitiveData]] | None = None
     headers: dict[str, str] | None = None
     cookies: dict[str, str] | None = None

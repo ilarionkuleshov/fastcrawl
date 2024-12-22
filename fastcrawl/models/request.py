@@ -3,8 +3,8 @@ from typing import (
     TYPE_CHECKING,
     Any,
     AsyncIterator,
-    Awaitable,
     Callable,
+    Coroutine,
     Sequence,
     Union,
 )
@@ -16,7 +16,9 @@ if TYPE_CHECKING:
     from fastcrawl.models.response import Response
 
 PrimitiveData = str | int | float | bool | None
-RequestCallback = Callable[["Response"], Awaitable[AsyncIterator[Union[Any, "Request"]] | None]]
+RequestCallback = Callable[
+    ["Response"], Union[Coroutine[Any, Any, AsyncIterator[Any | "Request"] | None], AsyncIterator[Any | "Request"]]
+]
 
 
 class Request(BaseModel):

@@ -1,19 +1,24 @@
+#!/bin/bash
 set -e
 
-echo "Isort checking..."
-isort fastcrawl/ --check
+packages=("fastcrawl" "examples")
 
-echo "Autoflake checking..."
-autoflake fastcrawl/ --check
+for package in "${packages[@]}"; do
+    echo "Isort checking for $package..."
+    isort "$package/" --check
 
-echo "Black checking..."
-black fastcrawl/ --check
+    echo "Autoflake checking for $package..."
+    autoflake "$package/" --check
 
-echo "Flake8 checking..."
-flake8 fastcrawl/
+    echo "Black checking for $package..."
+    black "$package/" --check
 
-echo "Pylint checking..."
-pylint fastcrawl/
+    echo "Flake8 checking for $package..."
+    flake8 "$package/"
 
-echo "Mypy checking..."
-mypy fastcrawl/
+    echo "Pylint checking for $package..."
+    pylint "$package/"
+
+    echo "Mypy checking for $package..."
+    mypy "$package/"
+done

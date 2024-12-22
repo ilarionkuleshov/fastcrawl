@@ -23,8 +23,20 @@ class Crawler(ABC):
     _queue: asyncio.Queue
 
     def __init__(self) -> None:
+        if self.config.configure_logging:
+            self._configure_logging()
         self.logger = logging.getLogger(self.__class__.__name__)
         self._queue = asyncio.Queue()
+
+    def _configure_logging(self) -> None:
+        """Configures logging for the crawler."""
+        logging.basicConfig(
+            level=self.config.log_level,
+            format=self.config.log_format,
+        )
+        logging.getLogger("asyncio").setLevel(self.config.log_level_asyncio)
+        logging.getLogger("httpx").setLevel(self.config.log_level_httpx)
+        logging.getLogger("httpcore").setLevel(self.config.log_level_httpcore)
 
     @abstractmethod
     async def generate_requests(self) -> AsyncIterator[Request]:
@@ -34,7 +46,7 @@ class Crawler(ABC):
 
     async def run(self) -> None:
         """Runs the crawler."""
-        self.logger.info("Running crawler with config:\n%s", self.config.model_dump_json(indent=2))
+        self.logger.info("Running crawler with config: %s", self.config.model_dump_json(indent=2))
 
         async for request in self.generate_requests():
             await self._queue.put(request)
@@ -57,7 +69,7 @@ class Crawler(ABC):
 
     async def _handle_request(self, request: Request) -> None:
         """Handles the `request`."""
-        self.logger.info("Handling request: %s", request)
+        self.logger.debug("Handling request: %s", request)
 
         async with AsyncClient() as client:
             request_kwargs: dict[str, Any] = {

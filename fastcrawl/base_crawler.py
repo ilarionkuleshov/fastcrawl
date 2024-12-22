@@ -43,7 +43,7 @@ class BaseCrawler(ABC):
 
     @abstractmethod
     async def generate_requests(self) -> AsyncIterator[Request]:
-        """Yields requests to be handled."""
+        """Yields requests to be processed."""
         if False:  # pylint: disable=W0125
             yield Request(url="https://example.com", callback=lambda _: None)  # just a stub for mypy
 
@@ -64,18 +64,18 @@ class BaseCrawler(ABC):
         self.logger.info("Crawling finished with stats: %s", self.stats.model_dump_json(indent=2))
 
     async def _worker(self) -> None:
-        """Worker to handle requests from the queue."""
+        """Worker to process requests from the queue."""
         while True:
             request = await self._queue.get()
             try:
-                await self._handle_request(request)
+                await self._process_request(request)
             except Exception as exc:  # pylint: disable=W0718
                 self.logger.error("Error handling request %s: %s", request, exc)
             finally:
                 self._queue.task_done()
 
-    async def _handle_request(self, request: Request) -> None:
-        """Handles the `request`."""
+    async def _process_request(self, request: Request) -> None:
+        """Processes the `request`."""
         self.logger.debug("Handling request: %s", request)
         self.stats.add_request()
 

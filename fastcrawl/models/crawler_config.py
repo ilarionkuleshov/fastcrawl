@@ -5,7 +5,7 @@ class CrawlerConfig(BaseModel):
     """Crawler configuration model.
 
     Attributes:
-        workers (int): Number of workers to handle requests. Default is 15.
+        workers (int): Number of workers to process requests. Default is 15.
         configure_logging (bool): Whether to configure logging for the crawler. Default is True.
         log_level (str): Logging level for the crawler. Default is "INFO".
         log_level_asyncio (str): Logging level for asyncio library. Default is "WARNING".

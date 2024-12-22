@@ -23,22 +23,22 @@ class CrawlerStats(BaseModel):
     responses_by_codes: dict[int, int] | None = None
 
     def start_crawling(self) -> None:
-        """Set the time when the crawling started."""
+        """Sets the time when the crawling started."""
         self.started_at = datetime.now()
 
     def finish_crawling(self) -> None:
-        """Set the time when the crawling finished."""
+        """Sets the time when the crawling finished."""
         self.finished_at = datetime.now()
 
     def add_request(self) -> None:
-        """Increase the number of requests made during the crawling."""
+        """Increases the number of requests made during the crawling."""
         if self.requests:
             self.requests += 1
         else:
             self.requests = 1
 
     def add_response(self, status_code: int) -> None:
-        """Increase the number of responses by status code."""
+        """Increases the number of responses by status code."""
         if self.responses_by_codes is None:
             self.responses_by_codes = {}
 

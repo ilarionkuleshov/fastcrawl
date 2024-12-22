@@ -25,7 +25,7 @@ class Request(BaseModel):
     Attributes:
         method (str): HTTP method. Default is "GET".
         url (URL | str): URL to request.
-        callback (RequestCallback): Callback to handle the response.
+        callback (RequestCallback): Callback to process the response.
         query_params (dict[str, PrimitiveData, Sequence[PrimitiveData]] | None): Query parameters
             for the URL. Default is None.
         headers (dict[str, str] | None): Headers for the request. Default is None.

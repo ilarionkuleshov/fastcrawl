@@ -8,7 +8,7 @@ from httpx import AsyncClient, Timeout
 from fastcrawl.models import CrawlerConfig, CrawlerStats, Request, Response
 
 
-class Crawler(ABC):
+class BaseCrawler(ABC):
     """Base for all crawlers.
 
     Attributes:

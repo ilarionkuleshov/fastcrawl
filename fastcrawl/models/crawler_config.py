@@ -1,4 +1,7 @@
-from pydantic import BaseModel
+from typing import Annotated
+
+from pydantic import BaseModel, ConfigDict
+from pydantic.functional_serializers import PlainSerializer
 
 from fastcrawl.pipelines import BasePipeline
 
@@ -21,10 +24,12 @@ class CrawlerConfig(BaseModel):
     """
 
     workers: int = 15
-    pipelines: list[BasePipeline] = []
+    pipelines: list[Annotated[BasePipeline, PlainSerializer(str)]] = []
     configure_logging: bool = True
     log_level: str = "INFO"
     log_level_asyncio: str = "WARNING"
     log_level_httpx: str = "WARNING"
     log_level_httpcore: str = "WARNING"
     log_format: str = "%(asctime)s [%(name)s] %(levelname)s: %(message)s"
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)

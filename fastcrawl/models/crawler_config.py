@@ -1,11 +1,15 @@
 from pydantic import BaseModel
 
+from fastcrawl.pipelines import BasePipeline
+
 
 class CrawlerConfig(BaseModel):
     """Crawler configuration model.
 
     Attributes:
         workers (int): Number of workers to process requests. Default is 15.
+        pipelines (list[BasePipeline]): List of pipelines to process responses.
+            Pipelines will be executed in the order they are defined. Default is [].
         configure_logging (bool): Whether to configure logging for the crawler. Default is True.
         log_level (str): Logging level for the crawler. Default is "INFO".
         log_level_asyncio (str): Logging level for asyncio library. Default is "WARNING".
@@ -17,6 +21,7 @@ class CrawlerConfig(BaseModel):
     """
 
     workers: int = 15
+    pipelines: list[BasePipeline] = []
     configure_logging: bool = True
     log_level: str = "INFO"
     log_level_asyncio: str = "WARNING"

@@ -51,6 +51,8 @@ class BaseCrawler(ABC):
         """Runs the crawler."""
         self.logger.info("Running crawler with config: %s", self.config.model_dump_json(indent=2))
         self.stats.start_crawling()
+        for pipeline in self.config.pipelines:
+            await pipeline.on_crawler_start()
 
         async for request in self.generate_requests():
             await self._queue.put(request)
@@ -60,6 +62,8 @@ class BaseCrawler(ABC):
         for worker in workers:
             worker.cancel()
 
+        for pipeline in self.config.pipelines:
+            await pipeline.on_crawler_finish()
         self.stats.finish_crawling()
         self.logger.info("Crawling finished with stats: %s", self.stats.model_dump_json(indent=2))
 
@@ -107,5 +111,10 @@ class BaseCrawler(ABC):
             async for item in callback_result:
                 if isinstance(item, Request):
                     await self._queue.put(item)
+                elif item is not None:
+                    for pipeline in self.config.pipelines:
+                        item = await pipeline.process_item(item)
+                        if item is None:
+                            break
         else:
             await callback_result

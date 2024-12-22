@@ -1,20 +1,19 @@
 from abc import ABC, abstractmethod
-
-from pydantic import BaseModel
+from typing import Any
 
 
 class BasePipeline(ABC):
     """Base for all pipelines."""
 
     @abstractmethod
-    async def process_item(self, item: BaseModel) -> BaseModel | None:
+    async def process_item(self, item: Any) -> Any | None:
         """Processes an item returned by the crawler.
 
         Args:
-            item (BaseModel): Item to process.
+            item (Any): Item to process.
 
         Returns:
-            BaseModel: Processed item.
+            Any: Processed item.
             None: If the item should be dropped and not passed to the next pipelines.
 
         """

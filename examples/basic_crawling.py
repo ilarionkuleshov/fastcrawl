@@ -4,7 +4,7 @@ from typing import AsyncIterator
 from fastcrawl import BaseCrawler, Request, Response
 
 
-class TitleCrawler(BaseCrawler):
+class ExampleCrawler(BaseCrawler):
     """Simple crawler for extracting the title of an HTML page."""
 
     async def generate_requests(self) -> AsyncIterator[Request]:
@@ -18,4 +18,4 @@ class TitleCrawler(BaseCrawler):
 
 
 if __name__ == "__main__":
-    asyncio.run(TitleCrawler().run())
+    asyncio.run(ExampleCrawler().run())

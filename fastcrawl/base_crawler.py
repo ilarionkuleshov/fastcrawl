@@ -116,5 +116,7 @@ class BaseCrawler(ABC):
                         item = await pipeline.process_item(item)
                         if item is None:
                             break
+                    else:
+                        self.stats.add_item()
         else:
             await callback_result

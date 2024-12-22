@@ -21,6 +21,7 @@ class CrawlerStats(BaseModel):
     finished_at: datetime | None = None
     requests: int | None = None
     responses_by_codes: dict[int, int] | None = None
+    items: int | None = None
 
     def start_crawling(self) -> None:
         """Sets the time when the crawling started."""
@@ -46,3 +47,10 @@ class CrawlerStats(BaseModel):
             self.responses_by_codes[status_code] += 1
         else:
             self.responses_by_codes[status_code] = 1
+
+    def add_item(self) -> None:
+        """Increases the number of items crawled."""
+        if self.items:
+            self.items += 1
+        else:
+            self.items = 1

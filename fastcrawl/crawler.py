@@ -5,7 +5,7 @@ from typing import Any, AsyncIterator
 
 from httpx import AsyncClient, Timeout
 
-from fastcrawl.models import CrawlerConfig, Request, Response
+from fastcrawl.models import CrawlerConfig, CrawlerStats, Request, Response
 
 
 class Crawler(ABC):
@@ -14,11 +14,13 @@ class Crawler(ABC):
     Attributes:
         logger (logging.Logger): Logger for the crawler.
         config (CrawlerConfig): Configuration for the crawler. Override it to set custom configuration.
+        stats (CrawlerStats): Statistics for the crawler.
 
     """
 
     logger: logging.Logger
     config: CrawlerConfig = CrawlerConfig()
+    stats: CrawlerStats
 
     _queue: asyncio.Queue
 
@@ -26,6 +28,7 @@ class Crawler(ABC):
         if self.config.configure_logging:
             self._configure_logging()
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.stats = CrawlerStats()
         self._queue = asyncio.Queue()
 
     def _configure_logging(self) -> None:
@@ -47,6 +50,7 @@ class Crawler(ABC):
     async def run(self) -> None:
         """Runs the crawler."""
         self.logger.info("Running crawler with config: %s", self.config.model_dump_json(indent=2))
+        self.stats.start_crawling()
 
         async for request in self.generate_requests():
             await self._queue.put(request)
@@ -55,6 +59,9 @@ class Crawler(ABC):
         await self._queue.join()
         for worker in workers:
             worker.cancel()
+
+        self.stats.finish_crawling()
+        self.logger.info("Crawling finished with stats: %s", self.stats.model_dump_json(indent=2))
 
     async def _worker(self) -> None:
         """Worker to handle requests from the queue."""
@@ -70,6 +77,7 @@ class Crawler(ABC):
     async def _handle_request(self, request: Request) -> None:
         """Handles the `request`."""
         self.logger.debug("Handling request: %s", request)
+        self.stats.add_request()
 
         async with AsyncClient() as client:
             request_kwargs: dict[str, Any] = {
@@ -92,6 +100,7 @@ class Crawler(ABC):
 
         response = Response.from_httpx_response(httpx_response, request)
         self.logger.debug("Got response: %s", response)
+        self.stats.add_response(response.status_code)
 
         callback_result = request.callback(response)
         if hasattr(callback_result, "__aiter__"):

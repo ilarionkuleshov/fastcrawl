@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.12"
 httpx = "^0.28.1"
 pydantic = "^2.10.4"
+parsel = "^1.9.1"
 
 [tool.poetry.group.dev.dependencies]
 isort = "^5.13.2"

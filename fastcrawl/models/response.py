@@ -4,7 +4,8 @@ from typing import Any
 from httpx import URL
 from httpx import Response as HttpxResponse
 from httpx import ResponseNotRead
-from pydantic import BaseModel, ConfigDict
+from parsel import Selector
+from pydantic import BaseModel, ConfigDict, PrivateAttr
 
 from fastcrawl.models.request import Request
 
@@ -30,6 +31,7 @@ class Response(BaseModel):
     headers: dict[str, str] | None = None
     cookies: dict[str, str] | None = None
     request: Request
+    _cached_selector: Selector | None = PrivateAttr(default=None)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -61,6 +63,18 @@ class Response(BaseModel):
     def get_json(self) -> Any | None:
         """Returns JSON representation of the response."""
         return json.loads(self.text) if self.text is not None else None
+
+    @property
+    def selector(self) -> Selector:
+        """Selector for xpath and css queries.
+
+        Note:
+            If text is None, it will return an empty selector.
+
+        """
+        if self._cached_selector is None:
+            self._cached_selector = Selector(text=self.text or "")
+        return self._cached_selector
 
     def __str__(self) -> str:
         return f"<{self.__class__.__name__}({self.status_code}, {self.url})>"

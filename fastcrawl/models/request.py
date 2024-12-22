@@ -54,5 +54,5 @@ class Request(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         return f"<{self.__class__.__name__}({self.method}, {self.url})>"

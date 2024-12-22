@@ -62,5 +62,5 @@ class Response(BaseModel):
         """Returns JSON representation of the response."""
         return json.loads(self.text) if self.text is not None else None
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         return f"<{self.__class__.__name__}({self.status_code}, {self.url})>"

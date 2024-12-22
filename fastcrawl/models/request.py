@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from fastcrawl.models.response import Response
 
 PrimitiveData = str | int | float | bool | None
-RequestCallback = Callable[["Response"], Awaitable[AsyncIterator[Union[BaseModel, "Request"]]]]
+RequestCallback = Callable[["Response"], Awaitable[AsyncIterator[Union[BaseModel, "Request"]] | None]]
 
 
 class Request(BaseModel):

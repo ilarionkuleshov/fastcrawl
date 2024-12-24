@@ -1,8 +1,10 @@
 from typing import Annotated
 
+from dotenv import find_dotenv
 from httpx import URL
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.functional_serializers import PlainSerializer
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from fastcrawl.base_pipeline import BasePipeline
 from fastcrawl.types import Auth, Cookies, Headers, QueryParams
@@ -73,7 +75,7 @@ class CrawlerHttpClientSettings(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
-class CrawlerSettings(BaseModel):
+class CrawlerSettings(BaseSettings):
     """Crawler settings model.
 
     Attributes:
@@ -93,4 +95,9 @@ class CrawlerSettings(BaseModel):
     logging: CrawlerLoggingSettings = CrawlerLoggingSettings()
     http_client: CrawlerHttpClientSettings = CrawlerHttpClientSettings()
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_config = SettingsConfigDict(
+        env_file=find_dotenv(),
+        env_prefix="fastcrawl_",
+        env_nested_delimiter="__",
+        extra="ignore",
+    )

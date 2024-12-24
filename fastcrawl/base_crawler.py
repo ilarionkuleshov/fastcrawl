@@ -3,7 +3,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import AsyncIterator
 
-from httpx import AsyncClient, Timeout
+from httpx import AsyncClient
 
 from fastcrawl.models import CrawlerConfig, CrawlerStats, Request, Response
 
@@ -83,10 +83,9 @@ class BaseCrawler(ABC):
         self.logger.debug("Handling request: %s", request)
         self.stats.add_request()
 
-        async with AsyncClient() as client:
+        http_client_kwargs = self.config.http_client.model_dump(by_alias=True)
+        async with AsyncClient(**http_client_kwargs, trust_env=False) as client:
             request_kwargs = request.model_dump(by_alias=True, exclude_none=True, exclude={"callback"})
-            if "timeout" in request_kwargs:
-                request_kwargs["timeout"] = Timeout(request_kwargs["timeout"].total_seconds())
             httpx_response = await client.request(**request_kwargs)
 
         response = Response.from_httpx_response(httpx_response, request)

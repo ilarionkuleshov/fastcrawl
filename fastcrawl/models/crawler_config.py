@@ -3,7 +3,7 @@ from typing import Annotated
 from pydantic import BaseModel, ConfigDict
 from pydantic.functional_serializers import PlainSerializer
 
-from fastcrawl.pipelines import BasePipeline
+from fastcrawl.base_pipeline import BasePipeline
 
 
 class CrawlerConfig(BaseModel):

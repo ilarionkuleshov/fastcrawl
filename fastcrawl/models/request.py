@@ -1,13 +1,5 @@
 from datetime import timedelta
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    AsyncIterator,
-    Callable,
-    Coroutine,
-    Sequence,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, AsyncIterator, Callable, Coroutine, Union
 
 from httpx import URL
 from pydantic import BaseModel, ConfigDict
@@ -16,9 +8,7 @@ if TYPE_CHECKING:
     from fastcrawl.models.response import Response
 
 PrimitiveData = str | int | float | bool | None
-RequestCallback = Callable[
-    ["Response"], Union[Coroutine[Any, Any, AsyncIterator[Any | "Request"] | None], AsyncIterator[Any | "Request"]]
-]
+RequestCallback = Callable[["Response"], Union[Coroutine[Any, Any, AsyncIterator[Any] | None], AsyncIterator[Any]]]
 
 
 class Request(BaseModel):
@@ -28,7 +18,7 @@ class Request(BaseModel):
         method (str): HTTP method. Default is "GET".
         url (URL | str): URL to request.
         callback (RequestCallback): Callback to process the response.
-        query_params (dict[str, PrimitiveData, Sequence[PrimitiveData]] | None): Query parameters
+        query_params (dict[str, PrimitiveData | list[PrimitiveData]] | None): Query parameters
             for the URL. Default is None.
         headers (dict[str, str] | None): Headers for the request. Default is None.
         cookies (dict[str, str] | None): Cookies for the request. Default is None.
@@ -44,7 +34,7 @@ class Request(BaseModel):
     method: str = "GET"
     url: URL | str
     callback: RequestCallback
-    query_params: dict[str, PrimitiveData | Sequence[PrimitiveData]] | None = None
+    query_params: dict[str, PrimitiveData | list[PrimitiveData]] | None = None
     headers: dict[str, str] | None = None
     cookies: dict[str, str] | None = None
     form_data: dict[str, Any] | None = None

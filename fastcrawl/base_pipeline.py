@@ -1,9 +1,11 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Generic, TypeVar, get_args
+
+T = TypeVar("T")
 
 
-class BasePipeline(ABC):
+class BasePipeline(ABC, Generic[T]):
     """Base for all pipelines.
 
     Attributes:
@@ -12,19 +14,38 @@ class BasePipeline(ABC):
     """
 
     logger: logging.Logger
+    _expected_type: type[T]
 
     def __init__(self) -> None:
         self.logger = logging.getLogger(self.__class__.__name__)
+        self._expected_type = get_args(self.__orig_bases__[0])[0]  # type: ignore[attr-defined]  # pylint: disable=E1101
 
-    @abstractmethod
-    async def process_item(self, item: Any) -> Any | None:
-        """Processes an item returned by the crawler.
+    async def process_item_with_check(self, item: Any) -> Any:
+        """Processes an item with type checking.
+
+        Note:
+            If the item is not an instance of the expected type, it will be returned as is.
 
         Args:
             item (Any): Item to process.
 
         Returns:
-            Any: Processed item.
+            Any: Processed item or the item itself.
+
+        """
+        if not isinstance(item, self._expected_type):
+            return item
+        return await self.process_item(item)
+
+    @abstractmethod
+    async def process_item(self, item: T) -> T | None:
+        """Processes an item returned by the crawler.
+
+        Args:
+            item (T): Item to process.
+
+        Returns:
+            T: Processed item.
             None: If the item should be dropped and not passed to the next pipelines.
 
         """
@@ -36,4 +57,4 @@ class BasePipeline(ABC):
         """Called when the crawler finishes."""
 
     def __str__(self) -> str:
-        return f"<{self.__class__.__name__}>"
+        return f"<{self.__class__.__name__}[{self._expected_type.__name__}]>"

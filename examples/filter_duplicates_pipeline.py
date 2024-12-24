@@ -13,7 +13,7 @@ class ExampleItem(BaseModel):
     title: str
 
 
-class FilterDuplicatesPipeline(BasePipeline):
+class FilterDuplicatesPipeline(BasePipeline[ExampleItem]):
     """Pipeline that filters out duplicate items based on their IDs."""
 
     unique_ids: set[str]

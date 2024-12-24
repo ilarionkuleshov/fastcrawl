@@ -113,7 +113,7 @@ class BaseCrawler(ABC):
                     await self._queue.put(item)
                 elif item is not None:
                     for pipeline in self.config.pipelines:
-                        item = await pipeline.process_item(item)
+                        item = await pipeline.process_item_with_check(item)
                         if item is None:
                             break
                     else:

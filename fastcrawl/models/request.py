@@ -2,7 +2,7 @@ from datetime import timedelta
 from typing import TYPE_CHECKING, Any, AsyncIterator, Callable, Coroutine, Union
 
 from httpx import URL
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 if TYPE_CHECKING:
     from fastcrawl.models.response import Response
@@ -34,11 +34,11 @@ class Request(BaseModel):
     method: str = "GET"
     url: URL | str
     callback: RequestCallback
-    query_params: dict[str, PrimitiveData | list[PrimitiveData]] | None = None
+    query_params: dict[str, PrimitiveData | list[PrimitiveData]] | None = Field(default=None, alias="params")
     headers: dict[str, str] | None = None
     cookies: dict[str, str] | None = None
-    form_data: dict[str, Any] | None = None
-    json_data: Any | None = None
+    form_data: dict[str, Any] | None = Field(default=None, alias="data")
+    json_data: Any | None = Field(default=None, alias="json")
     files: dict[str, bytes] | None = None
     auth: tuple[str, str] | None = None
     timeout: timedelta | None = None

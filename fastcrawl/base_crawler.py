@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, AsyncIterator
+from typing import AsyncIterator
 
 from httpx import AsyncClient, Timeout
 
@@ -84,22 +84,9 @@ class BaseCrawler(ABC):
         self.stats.add_request()
 
         async with AsyncClient() as client:
-            request_kwargs: dict[str, Any] = {
-                "method": request.method,
-                "url": request.url,
-                "params": request.query_params,
-                "headers": request.headers,
-                "cookies": request.cookies,
-                "data": request.form_data,
-                "json": request.json_data,
-                "files": request.files,
-            }
-            if request.auth is not None:
-                request_kwargs["auth"] = request.auth
-            if request.timeout is not None:
-                request_kwargs["timeout"] = Timeout(request.timeout.total_seconds())
-            if request.follow_redirects is not None:
-                request_kwargs["follow_redirects"] = request.follow_redirects
+            request_kwargs = request.model_dump(by_alias=True, exclude_none=True, exclude={"callback"})
+            if "timeout" in request_kwargs:
+                request_kwargs["timeout"] = Timeout(request_kwargs["timeout"].total_seconds())
             httpx_response = await client.request(**request_kwargs)
 
         response = Response.from_httpx_response(httpx_response, request)

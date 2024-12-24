@@ -1,10 +1,10 @@
 import asyncio
 from typing import AsyncIterator
 
-from fastcrawl import Crawler, Request, Response
+from fastcrawl import BaseCrawler, Request, Response
 
 
-class TitleCrawler(Crawler):
+class ExampleCrawler(BaseCrawler):
     """Simple crawler for extracting the title of an HTML page."""
 
     async def generate_requests(self) -> AsyncIterator[Request]:
@@ -18,4 +18,4 @@ class TitleCrawler(Crawler):
 
 
 if __name__ == "__main__":
-    asyncio.run(TitleCrawler().run())
+    asyncio.run(ExampleCrawler().run())

@@ -5,7 +5,7 @@ from typing import AsyncIterator
 
 from httpx import AsyncClient, Limits
 
-from fastcrawl.models import CrawlerConfig, CrawlerStats, Request, Response
+from fastcrawl.models import CrawlerSettings, CrawlerStats, Request, Response
 
 
 class BaseCrawler(ABC):
@@ -13,38 +13,38 @@ class BaseCrawler(ABC):
 
     Attributes:
         logger (logging.Logger): Logger for the crawler.
-        config (CrawlerConfig): Configuration for the crawler. Override it to set custom configuration.
+        settings (CrawlerSettings): Settings for the crawler. Override it to set custom settings.
         stats (CrawlerStats): Statistics for the crawler.
 
     """
 
     logger: logging.Logger
-    config: CrawlerConfig = CrawlerConfig()
+    settings: CrawlerSettings = CrawlerSettings()
     stats: CrawlerStats
 
     _queue: asyncio.Queue
     _http_client: AsyncClient
 
     def __init__(self) -> None:
-        if self.config.configure_logging:
-            self._configure_logging()
+        if self.settings.setup_logging:
+            self._setup_logging()
         self.logger = logging.getLogger(self.__class__.__name__)
         self.stats = CrawlerStats()
         self._queue = asyncio.Queue()
         self._http_client = AsyncClient(**self._get_http_client_kwargs())
 
-    def _configure_logging(self) -> None:
-        """Configures logging for the crawler."""
+    def _setup_logging(self) -> None:
+        """Sets up logging for the crawler."""
         logging.basicConfig(
-            level=self.config.logging.level,
-            format=self.config.logging.format,
+            level=self.settings.logging.level,
+            format=self.settings.logging.format,
         )
-        logging.getLogger("asyncio").setLevel(self.config.logging.level_asyncio)
-        logging.getLogger("httpx").setLevel(self.config.logging.level_httpx)
-        logging.getLogger("httpcore").setLevel(self.config.logging.level_httpcore)
+        logging.getLogger("asyncio").setLevel(self.settings.logging.level_asyncio)
+        logging.getLogger("httpx").setLevel(self.settings.logging.level_httpx)
+        logging.getLogger("httpcore").setLevel(self.settings.logging.level_httpcore)
 
     def _get_http_client_kwargs(self):
-        kwargs = self.config.http_client.model_dump(by_alias=True)
+        kwargs = self.settings.http_client.model_dump(by_alias=True)
         kwargs["trust_env"] = False
         kwargs["limits"] = Limits(
             max_connections=kwargs.pop("max_connections"),
@@ -61,22 +61,22 @@ class BaseCrawler(ABC):
 
     async def run(self) -> None:
         """Runs the crawler."""
-        self.logger.info("Running crawler with config: %s", self.config.model_dump_json(indent=2))
+        self.logger.info("Running crawler with settings: %s", self.settings.model_dump_json(indent=2))
         self.stats.start_crawling()
-        for pipeline in self.config.pipelines:
+        for pipeline in self.settings.pipelines:
             await pipeline.on_crawler_start()
 
         async for request in self.generate_requests():
             await self._queue.put(request)
 
-        workers = [asyncio.create_task(self._worker()) for _ in range(self.config.workers)]
+        workers = [asyncio.create_task(self._worker()) for _ in range(self.settings.workers)]
         await self._queue.join()
         for worker in workers:
             worker.cancel()
 
         await self._http_client.aclose()
 
-        for pipeline in self.config.pipelines:
+        for pipeline in self.settings.pipelines:
             await pipeline.on_crawler_finish()
         self.stats.finish_crawling()
         self.logger.info("Crawling finished with stats: %s", self.stats.model_dump_json(indent=2))
@@ -110,7 +110,7 @@ class BaseCrawler(ABC):
                 if isinstance(item, Request):
                     await self._queue.put(item)
                 elif item is not None:
-                    for pipeline in self.config.pipelines:
+                    for pipeline in self.settings.pipelines:
                         item = await pipeline.process_item_with_check(item)
                         if item is None:
                             break

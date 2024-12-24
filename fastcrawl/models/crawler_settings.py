@@ -8,8 +8,8 @@ from fastcrawl.base_pipeline import BasePipeline
 from fastcrawl.types import Auth, Cookies, Headers, QueryParams
 
 
-class CrawlerLoggingConfig(BaseModel):
-    """Crawler logging configuration model.
+class CrawlerLoggingSettings(BaseModel):
+    """Crawler logging settings model.
 
     Attributes:
         level (str): Logging level for the crawler. Default is "INFO".
@@ -28,8 +28,8 @@ class CrawlerLoggingConfig(BaseModel):
     level_httpcore: str = "WARNING"
 
 
-class CrawlerHttpClientConfig(BaseModel):
-    """Crawler HTTP client configuration model.
+class CrawlerHttpClientSettings(BaseModel):
+    """Crawler HTTP client settings model.
 
     Attributes:
         base_url (URL | str): Base URL for the HTTP client. Default is "".
@@ -73,24 +73,24 @@ class CrawlerHttpClientConfig(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
-class CrawlerConfig(BaseModel):
-    """Crawler configuration model.
+class CrawlerSettings(BaseModel):
+    """Crawler settings model.
 
     Attributes:
         workers (int): Number of workers to process requests. Default is 15.
         pipelines (list[BasePipeline]): List of pipelines to process responses.
             Pipelines will be executed in the order they are defined. Default is [].
-        configure_logging (bool): Whether to configure logging for the crawler. Default is True.
-        logging (CrawlerLoggingConfig): Logging configuration for the crawler. Default is CrawlerLoggingConfig().
-        http_client (CrawlerHttpClientConfig): HTTP client configuration for the crawler.
-            Default is CrawlerHttpClientConfig().
+        setup_logging (bool): Whether to setup logging for the crawler. Default is True.
+        logging (CrawlerLoggingSettings): Logging settings for the crawler. Default is CrawlerLoggingSettings().
+        http_client (CrawlerHttpClientSettings): HTTP client settings for the crawler.
+            Default is CrawlerHttpClientSettings().
 
     """
 
     workers: int = 15
     pipelines: list[Annotated[BasePipeline, PlainSerializer(str)]] = []
-    configure_logging: bool = True
-    logging: CrawlerLoggingConfig = CrawlerLoggingConfig()
-    http_client: CrawlerHttpClientConfig = CrawlerHttpClientConfig()
+    setup_logging: bool = True
+    logging: CrawlerLoggingSettings = CrawlerLoggingSettings()
+    http_client: CrawlerHttpClientSettings = CrawlerHttpClientSettings()
 
     model_config = ConfigDict(arbitrary_types_allowed=True)

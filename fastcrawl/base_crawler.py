@@ -34,12 +34,12 @@ class BaseCrawler(ABC):
     def _configure_logging(self) -> None:
         """Configures logging for the crawler."""
         logging.basicConfig(
-            level=self.config.log_level,
-            format=self.config.log_format,
+            level=self.config.logging.level,
+            format=self.config.logging.format,
         )
-        logging.getLogger("asyncio").setLevel(self.config.log_level_asyncio)
-        logging.getLogger("httpx").setLevel(self.config.log_level_httpx)
-        logging.getLogger("httpcore").setLevel(self.config.log_level_httpcore)
+        logging.getLogger("asyncio").setLevel(self.config.logging.level_asyncio)
+        logging.getLogger("httpx").setLevel(self.config.logging.level_httpx)
+        logging.getLogger("httpcore").setLevel(self.config.logging.level_httpcore)
 
     @abstractmethod
     async def generate_requests(self) -> AsyncIterator[Request]:

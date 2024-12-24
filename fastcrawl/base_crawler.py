@@ -3,7 +3,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import AsyncIterator
 
-from httpx import AsyncClient
+from httpx import AsyncClient, Limits
 
 from fastcrawl.models import CrawlerConfig, CrawlerStats, Request, Response
 
@@ -23,6 +23,7 @@ class BaseCrawler(ABC):
     stats: CrawlerStats
 
     _queue: asyncio.Queue
+    _http_client: AsyncClient
 
     def __init__(self) -> None:
         if self.config.configure_logging:
@@ -30,6 +31,7 @@ class BaseCrawler(ABC):
         self.logger = logging.getLogger(self.__class__.__name__)
         self.stats = CrawlerStats()
         self._queue = asyncio.Queue()
+        self._http_client = AsyncClient(**self._get_http_client_kwargs())
 
     def _configure_logging(self) -> None:
         """Configures logging for the crawler."""
@@ -40,6 +42,16 @@ class BaseCrawler(ABC):
         logging.getLogger("asyncio").setLevel(self.config.logging.level_asyncio)
         logging.getLogger("httpx").setLevel(self.config.logging.level_httpx)
         logging.getLogger("httpcore").setLevel(self.config.logging.level_httpcore)
+
+    def _get_http_client_kwargs(self):
+        kwargs = self.config.http_client.model_dump(by_alias=True)
+        kwargs["trust_env"] = False
+        kwargs["limits"] = Limits(
+            max_connections=kwargs.pop("max_connections"),
+            max_keepalive_connections=kwargs.pop("max_keepalive_connections"),
+            keepalive_expiry=kwargs.pop("keepalive_expiry"),
+        )
+        return kwargs
 
     @abstractmethod
     async def generate_requests(self) -> AsyncIterator[Request]:
@@ -62,6 +74,8 @@ class BaseCrawler(ABC):
         for worker in workers:
             worker.cancel()
 
+        await self._http_client.aclose()
+
         for pipeline in self.config.pipelines:
             await pipeline.on_crawler_finish()
         self.stats.finish_crawling()
@@ -83,10 +97,8 @@ class BaseCrawler(ABC):
         self.logger.debug("Handling request: %s", request)
         self.stats.add_request()
 
-        http_client_kwargs = self.config.http_client.model_dump(by_alias=True)
-        async with AsyncClient(**http_client_kwargs, trust_env=False) as client:
-            request_kwargs = request.model_dump(by_alias=True, exclude_none=True, exclude={"callback"})
-            httpx_response = await client.request(**request_kwargs)
+        request_kwargs = request.model_dump(by_alias=True, exclude_none=True, exclude={"callback"})
+        httpx_response = await self._http_client.request(**request_kwargs)
 
         response = Response.from_httpx_response(httpx_response, request)
         self.logger.debug("Got response: %s", response)

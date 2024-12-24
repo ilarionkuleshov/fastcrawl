@@ -70,6 +70,8 @@ class CrawlerHttpClientConfig(BaseModel):
     max_redirects: int = 20
     default_encoding: str = "utf-8"
 
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
 
 class CrawlerConfig(BaseModel):
     """Crawler configuration model.

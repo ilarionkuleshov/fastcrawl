@@ -3,7 +3,7 @@ from typing import AsyncIterator
 
 from pydantic import BaseModel
 
-from fastcrawl import BaseCrawler, BasePipeline, CrawlerConfig, Request, Response
+from fastcrawl import BaseCrawler, BasePipeline, CrawlerSettings, Request, Response
 
 
 class ExampleItem(BaseModel):
@@ -34,7 +34,7 @@ class FilterDuplicatesPipeline(BasePipeline[ExampleItem]):
 class ExampleCrawler(BaseCrawler):
     """Crawler that uses the `FilterDuplicatesPipeline`."""
 
-    config = CrawlerConfig(pipelines=[FilterDuplicatesPipeline()])
+    settings = CrawlerSettings(pipelines=[FilterDuplicatesPipeline()])
 
     async def generate_requests(self) -> AsyncIterator[Request]:
         """See `Crawler` class."""

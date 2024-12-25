@@ -1,14 +1,16 @@
-from datetime import timedelta
-from typing import TYPE_CHECKING, Any, AsyncIterator, Callable, Coroutine, Union
-
 from httpx import URL
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
-if TYPE_CHECKING:
-    from fastcrawl.models.response import Response
-
-PrimitiveData = str | int | float | bool | None
-RequestCallback = Callable[["Response"], Union[Coroutine[Any, Any, AsyncIterator[Any] | None], AsyncIterator[Any]]]
+from fastcrawl.types import (
+    Auth,
+    Cookies,
+    Files,
+    FormData,
+    Headers,
+    JsonData,
+    QueryParams,
+    RequestCallback,
+)
 
 
 class Request(BaseModel):
@@ -18,31 +20,30 @@ class Request(BaseModel):
         method (str): HTTP method. Default is "GET".
         url (URL | str): URL to request.
         callback (RequestCallback): Callback to process the response.
-        query_params (dict[str, PrimitiveData | list[PrimitiveData]] | None): Query parameters
-            for the URL. Default is None.
-        headers (dict[str, str] | None): Headers for the request. Default is None.
-        cookies (dict[str, str] | None): Cookies for the request. Default is None.
-        form_data (dict[str, Any] | None): Form data for the request. Default is None.
-        json_data (Any | None): JSON data for the request. Default is None.
-        files (dict[str, bytes] | None): Files for the request. Default is None.
-        auth (tuple[str, str] | None): Authentication credentials. Default is None.
-        timeout (timedelta | None): Timeout for the request. Default is None.
-        follow_redirects (bool | None): Whether to follow redirects. Default is True.
+        query_params (QueryParams | None): Query parameters for the URL. Default is None.
+        headers (Headers | None): Headers for the request. Default is None.
+        cookies (Cookies | None): Cookies for the request. Default is None.
+        form_data (FormData | None): Form data for the request. Default is None.
+        json_data (JsonData | None): JSON data for the request. Default is None.
+        files (Files | None): Files for the request. Default is None.
+        auth (Auth | None): Authentication credentials. Default is None.
+        timeout (float | None): Timeout for the request in seconds. Default is None.
+        follow_redirects (bool | None): Whether to follow redirects. Default is None.
 
     """
 
     method: str = "GET"
     url: URL | str
     callback: RequestCallback
-    query_params: dict[str, PrimitiveData | list[PrimitiveData]] | None = None
-    headers: dict[str, str] | None = None
-    cookies: dict[str, str] | None = None
-    form_data: dict[str, Any] | None = None
-    json_data: Any | None = None
-    files: dict[str, bytes] | None = None
-    auth: tuple[str, str] | None = None
-    timeout: timedelta | None = None
-    follow_redirects: bool | None = True
+    query_params: QueryParams | None = Field(default=None, alias="params")
+    headers: Headers | None = None
+    cookies: Cookies | None = None
+    form_data: FormData | None = Field(default=None, alias="data")
+    json_data: JsonData | None = Field(default=None, alias="json")
+    files: Files | None = None
+    auth: Auth | None = None
+    timeout: float | None = None
+    follow_redirects: bool | None = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

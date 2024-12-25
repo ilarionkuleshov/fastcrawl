@@ -1,5 +1,5 @@
 from httpx import URL
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
 
 from fastcrawl.types import (
     Auth,
@@ -35,11 +35,11 @@ class Request(BaseModel):
     method: str = "GET"
     url: URL | str
     callback: RequestCallback
-    query_params: QueryParams | None = Field(default=None, alias="params")
+    query_params: QueryParams | None = None
     headers: Headers | None = None
     cookies: Cookies | None = None
-    form_data: FormData | None = Field(default=None, alias="data")
-    json_data: JsonData | None = Field(default=None, alias="json")
+    form_data: FormData | None = None
+    json_data: JsonData | None = None
     files: Files | None = None
     auth: Auth | None = None
     timeout: float | None = None

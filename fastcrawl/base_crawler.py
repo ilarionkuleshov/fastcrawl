@@ -44,7 +44,8 @@ class BaseCrawler(ABC):
         logging.getLogger("httpcore").setLevel(self.settings.logging.level_httpcore)
 
     def _get_http_client_kwargs(self):
-        kwargs = self.settings.http_client.model_dump(by_alias=True)
+        kwargs = self.settings.http_client.model_dump()
+        kwargs["params"] = kwargs.pop("query_params")
         kwargs["trust_env"] = False
         kwargs["limits"] = Limits(
             max_connections=kwargs.pop("max_connections"),
@@ -88,19 +89,27 @@ class BaseCrawler(ABC):
             try:
                 await self._process_request(request)
             except Exception as exc:  # pylint: disable=W0718
-                self.logger.error("Error handling request %s: %s", request, exc)
+                self.logger.error("Error processing request %s: %s", request, exc)
             finally:
                 self._queue.task_done()
 
     async def _process_request(self, request: Request) -> None:
-        """Processes the `request`."""
-        self.logger.debug("Handling request: %s", request)
+        """Executes the request, callback and processes the results.
+
+        Args:
+            request (Request): The request to process.
+
+        """
+        self.logger.debug("Processing request: %s", request)
         self.stats.add_request()
 
-        request_kwargs = request.model_dump(by_alias=True, exclude_none=True, exclude={"callback"})
+        request_kwargs = request.model_dump(exclude_none=True, exclude={"callback"})
+        request_kwargs["params"] = request_kwargs.pop("query_params")
+        request_kwargs["data"] = request_kwargs.pop("form_data")
+        request_kwargs["json"] = request_kwargs.pop("json_data")
         httpx_response = await self._http_client.request(**request_kwargs)
 
-        response = Response.from_httpx_response(httpx_response, request)
+        response = await Response.from_httpx_response(httpx_response, request)
         self.logger.debug("Got response: %s", response)
         self.stats.add_response(response.status_code)
 

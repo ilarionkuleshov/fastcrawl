@@ -16,8 +16,8 @@ class Response(BaseModel):
     Attributes:
         url (URL): URL of the response.
         status_code (int): Status code of the response.
-        content (bytes | None): Content of the response. Default is None.
-        text (str | None): Text of the response. Default is None.
+        content (bytes): Content of the response.
+        text (str): Text of the response.
         headers (dict[str, str] | None): Headers of the response. Default is None.
         cookies (dict[str, str] | None): Cookies of the response. Default is None.
         request (Request): Request used to fetch the response.
@@ -26,8 +26,8 @@ class Response(BaseModel):
 
     url: URL
     status_code: int
-    content: bytes | None = None
-    text: str | None = None
+    content: bytes
+    text: str
     headers: dict[str, str] | None = None
     cookies: dict[str, str] | None = None
     request: Request
@@ -36,7 +36,7 @@ class Response(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @classmethod
-    def from_httpx_response(cls, httpx_response: HttpxResponse, request: Request) -> "Response":
+    async def from_httpx_response(cls, httpx_response: HttpxResponse, request: Request) -> "Response":
         """Returns new instance from an httpx response.
 
         Args:
@@ -46,34 +46,28 @@ class Response(BaseModel):
         """
         try:
             content = httpx_response.content
-            text = httpx_response.text
         except ResponseNotRead:
-            content = None
-            text = None
+            content = await httpx_response.aread()
+
         return cls(
             url=httpx_response.url,
             status_code=httpx_response.status_code,
             content=content,
-            text=text,
+            text=httpx_response.text,
             headers=dict(httpx_response.headers),
             cookies=dict(httpx_response.cookies),
             request=request,
         )
 
-    def get_json(self) -> Any | None:
-        """Returns JSON representation of the response."""
-        return json.loads(self.text) if self.text is not None else None
+    def get_json_data(self) -> Any:
+        """Returns JSON data from the response."""
+        return json.loads(self.text)
 
     @property
     def selector(self) -> Selector:
-        """Selector for xpath and css queries.
-
-        Note:
-            If text is None, it will return an empty selector.
-
-        """
+        """Selector for xpath and css queries."""
         if self._cached_selector is None:
-            self._cached_selector = Selector(text=self.text or "")
+            self._cached_selector = Selector(text=self.text)
         return self._cached_selector
 
     def __str__(self) -> str:

@@ -5,7 +5,7 @@ import pytest
 from httpx import URL
 from parsel import Selector
 
-from fastcrawl.models import Response
+from fastcrawl import Response
 from tests.utils import create_httpx_response, create_request, create_response
 
 

@@ -2,7 +2,7 @@ from datetime import datetime
 
 from freezegun import freeze_time
 
-from fastcrawl.models import CrawlerStats
+from fastcrawl import CrawlerStats
 
 
 def test_start_crawling_and_finish_crawling() -> None:

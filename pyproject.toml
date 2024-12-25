@@ -23,6 +23,7 @@ mypy = "^1.13.0"
 pytest = "^8.3.4"
 pytest-asyncio = "^0.25.0"
 coverage = "^7.6.9"
+freezegun = "^1.5.1"
 
 [build-system]
 requires = ["poetry-core"]

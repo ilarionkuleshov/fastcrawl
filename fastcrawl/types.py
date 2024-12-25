@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Any, AsyncIterator, Callable, Coroutine
 
 if TYPE_CHECKING:
-    from fastcrawl.models import Response
+    from fastcrawl.models import Response  # pragma: no cover
 
 PrimitiveData = str | int | float | bool | None
 

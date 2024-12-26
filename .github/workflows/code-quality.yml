@@ -41,7 +41,7 @@ jobs:
         run: mkdir coverage
 
       - name: Run tests
-        run: poetry run bash ./scripts/test.sh --generate_html_report=false --coverage_file=coverage/coverage-${{ matrix.python-version }}
+        run: poetry run bash ./scripts/test.sh --generate-html-report=false --coverage-file=coverage/coverage-${{ matrix.python-version }}
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4

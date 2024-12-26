@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -10,18 +11,19 @@ class CrawlerStats(BaseModel):
         To update statistics while crawling, use corresponding methods.
 
     Attributes:
-        started_at (datetime | None): The time when the crawling started. Default is None.
-        finished_at (datetime | None): The time when the crawling finished. Default is None.
-        requests (int | None): The number of requests made during the crawling. Default is None.
-        responses_by_codes (dict[int, int] | None): The number of responses by status code. Default is None.
+        started_at (Optional[datetime]): The time when the crawling started. Default is None.
+        finished_at (Optional[datetime]): The time when the crawling finished. Default is None.
+        requests (Optional[int]): The number of requests made during the crawling. Default is None.
+        responses_by_codes (Optional[dict[int, int]]): The number of responses by status code. Default is None.
+        items (Optional[int]): The number of items crawled. Default is None.
 
     """
 
-    started_at: datetime | None = None
-    finished_at: datetime | None = None
-    requests: int | None = None
-    responses_by_codes: dict[int, int] | None = None
-    items: int | None = None
+    started_at: Optional[datetime] = None
+    finished_at: Optional[datetime] = None
+    requests: Optional[int] = None
+    responses_by_codes: Optional[dict[int, int]] = None
+    items: Optional[int] = None
 
     def start_crawling(self) -> None:
         """Sets the time when the crawling started."""

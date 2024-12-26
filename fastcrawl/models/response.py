@@ -1,5 +1,5 @@
 import json
-from typing import Any
+from typing import Any, Optional
 
 from httpx import URL
 from httpx import Response as HttpxResponse
@@ -18,8 +18,8 @@ class Response(BaseModel):
         status_code (int): Status code of the response.
         content (bytes): Content of the response.
         text (str): Text of the response.
-        headers (dict[str, str] | None): Headers of the response. Default is None.
-        cookies (dict[str, str] | None): Cookies of the response. Default is None.
+        headers (Optional[dict[str, str]]): Headers of the response. Default is None.
+        cookies (Optional[dict[str, str]]): Cookies of the response. Default is None.
         request (Request): Request used to fetch the response.
 
     """
@@ -28,10 +28,10 @@ class Response(BaseModel):
     status_code: int
     content: bytes
     text: str
-    headers: dict[str, str] | None = None
-    cookies: dict[str, str] | None = None
+    headers: Optional[dict[str, str]] = None
+    cookies: Optional[dict[str, str]] = None
     request: Request
-    _cached_selector: Selector | None = PrivateAttr(default=None)
+    _cached_selector: Optional[Selector] = PrivateAttr(default=None)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

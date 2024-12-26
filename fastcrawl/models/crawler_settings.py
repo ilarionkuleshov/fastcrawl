@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Optional, Union
 
 from dotenv import find_dotenv
 from httpx import URL
@@ -34,20 +34,20 @@ class CrawlerHttpClientSettings(BaseModel):
     """Crawler HTTP client settings model.
 
     Attributes:
-        base_url (URL | str): Base URL for the HTTP client. Default is "".
-        auth (Auth | None): Authentication for the HTTP client. Default is None.
-        query_params (QueryParams | None): Query parameters for the HTTP client. Default is None.
-        headers (Headers | None): Headers for the HTTP client. Default is None.
-        cookies (Cookies | None): Cookies for the HTTP client. Default is None.
+        base_url (Union[URL, str]): Base URL for the HTTP client. Default is "".
+        auth (Optional[Auth]): Authentication for the HTTP client. Default is None.
+        query_params (Optional[QueryParams]): Query parameters for the HTTP client. Default is None.
+        headers (Optional[Headers]): Headers for the HTTP client. Default is None.
+        cookies (Optional[Cookies]): Cookies for the HTTP client. Default is None.
         verify (bool): Whether to verify SSL certificates. Default is True.
         http1 (bool): Whether to use HTTP/1.1. Default is True.
         http2 (bool): Whether to use HTTP/2. Default is False.
-        proxy (URL | str | None): Proxy for the HTTP client. Default is None.
+        proxy (Optional[Union[URL, str]]): Proxy for the HTTP client. Default is None.
         timeout (float): Timeout for the HTTP client. Default is 5.0.
-        max_connections (int | None): Specifies the maximum number of concurrent connections allowed. Default is 100.
-        max_keepalive_connections (int | None): The maximum number of keep-alive connections the pool can maintain.
+        max_connections (Optional[int]): Specifies the maximum number of concurrent connections allowed. Default is 100.
+        max_keepalive_connections (Optional[int]): The maximum number of keep-alive connections the pool can maintain.
             Must not exceed `max_connections`. Default is 20.
-        keepalive_expiry (float | None): The maximum duration in seconds that a keep-alive
+        keepalive_expiry (Optional[float]): The maximum duration in seconds that a keep-alive
             connection can remain idle. Default is 5.0.
         follow_redirects (bool): Whether to follow redirects. Default is False.
         max_redirects (int): Maximum number of redirects to follow. Default is 20.
@@ -55,19 +55,19 @@ class CrawlerHttpClientSettings(BaseModel):
 
     """
 
-    base_url: URL | str = ""
-    auth: Auth | None = None
-    query_params: QueryParams | None = None
-    headers: Headers | None = None
-    cookies: Cookies | None = None
+    base_url: Union[URL, str] = ""
+    auth: Optional[Auth] = None
+    query_params: Optional[QueryParams] = None
+    headers: Optional[Headers] = None
+    cookies: Optional[Cookies] = None
     verify: bool = True
     http1: bool = True
     http2: bool = False
-    proxy: URL | str | None = None
+    proxy: Optional[Union[URL, str]] = None
     timeout: float = 5.0
-    max_connections: int | None = 100
-    max_keepalive_connections: int | None = 20
-    keepalive_expiry: float | None = 5.0
+    max_connections: Optional[int] = 100
+    max_keepalive_connections: Optional[int] = 20
+    keepalive_expiry: Optional[float] = 5.0
     follow_redirects: bool = False
     max_redirects: int = 20
     default_encoding: str = "utf-8"

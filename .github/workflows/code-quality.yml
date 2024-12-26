@@ -1,0 +1,31 @@
+name: Code quality
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  code-quality:
+    name: Code quality
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Lint
+      uses: devcontainers/ci@v0.3
+      with:
+        runCmd: poetry run bash ./scripts/lint.sh
+
+    - name: Test
+      uses: devcontainers/ci@v0.3
+      with:
+        runCmd: poetry run bash ./scripts/test.sh
+
+    - name: Upload coverage-report artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: htmlcov

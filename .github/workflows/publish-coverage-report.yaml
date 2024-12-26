@@ -1,9 +1,6 @@
 name: Publish coverage report
 
 on:
-  push:
-    branches:
-      - main
   workflow_run:
     workflows: ["Lint and test"]
     branches: [main]

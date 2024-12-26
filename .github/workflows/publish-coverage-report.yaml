@@ -1,0 +1,38 @@
+name: Publish coverage report
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish-coverage-report:
+    name: Publish coverage report
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Download coverage-report artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: coverage-report
+
+    - name: Setup python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.12
+        cache: 'pip'
+
+    - name: Install smokeshow
+      run: pip install smokeshow
+
+    - name: Publish coverage report
+      run: smokeshow upload coverage-report
+      env:
+        SMOKESHOW_GITHUB_STATUS_DESCRIPTION: Coverage {coverage-percentage}
+        SMOKESHOW_GITHUB_COVERAGE_THRESHOLD: 90
+        SMOKESHOW_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SMOKESHOW_GITHUB_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        SMOKESHOW_AUTH_KEY: ${{ secrets.SMOKESHOW_AUTH_KEY }}

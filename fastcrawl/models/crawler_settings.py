@@ -2,7 +2,7 @@ from typing import Annotated
 
 from dotenv import find_dotenv
 from httpx import URL
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
 from pydantic.functional_serializers import PlainSerializer
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -57,7 +57,7 @@ class CrawlerHttpClientSettings(BaseModel):
 
     base_url: URL | str = ""
     auth: Auth | None = None
-    query_params: QueryParams | None = Field(default=None, alias="params")
+    query_params: QueryParams | None = None
     headers: Headers | None = None
     cookies: Cookies | None = None
     verify: bool = True

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-packages=("fastcrawl/" "examples/")
+packages=("fastcrawl/" "tests/")
 
 for package in "${packages[@]}"; do
     echo "Isort formatting for $package package..."

@@ -1,13 +1,16 @@
-name: Code quality
+name: Lint and test
 
 on:
   pull_request:
     branches:
       - main
+  push:
+    branches:
+      - main
 
 jobs:
-  code-quality:
-    name: Code quality
+  lint-and-test:
+    name: Lint and test
     runs-on: ubuntu-latest
 
     steps:
@@ -24,7 +27,7 @@ jobs:
       with:
         runCmd: poetry run bash ./scripts/test.sh
 
-    - name: Upload coverage-report artifact
+    - name: Upload coverage report artifact
       uses: actions/upload-artifact@v4
       with:
         name: coverage-report

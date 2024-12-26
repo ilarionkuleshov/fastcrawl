@@ -1,0 +1,96 @@
+name: Code quality
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint-and-test:
+    name: Lint and test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Setup poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: latest
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Lint code
+        run: poetry run bash ./scripts/lint.sh
+
+      - name: Create coverage directory
+        run: mkdir coverage
+
+      - name: Run tests
+        run: poetry run bash ./scripts/test.sh --generate_html_report=false --coverage_file=coverage/coverage-${{ matrix.python-version }}
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.python-version }}
+          path: coverage
+          include-hidden-files: true
+
+  combine-coverage:
+    name: Combine coverage
+    runs-on: ubuntu-latest
+    needs: ["lint-and-test"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download coverage artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: coverage-*
+          path: coverage
+          merge-multiple: true
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
+      - name: Setup poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: latest
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Combine coverage
+        run: coverage combine coverage
+
+      - name: Show report
+        run: coverage report
+
+      - name: Generate HTML report
+        run: coverage html --title "Coverage for ${{ github.sha }}"
+
+      - name: Upload combined coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: .coverage_html
+          include-hidden-files: true

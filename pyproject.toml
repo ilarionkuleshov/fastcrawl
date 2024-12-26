@@ -24,6 +24,7 @@ pytest = "^8.3.4"
 pytest-asyncio = "^0.25.0"
 coverage = "^7.6.9"
 freezegun = "^1.5.1"
+pytest-httpx = "^0.35.0"
 
 [build-system]
 requires = ["poetry-core"]

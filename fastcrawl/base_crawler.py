@@ -11,6 +11,10 @@ from fastcrawl.models import CrawlerSettings, CrawlerStats, Request, Response
 class BaseCrawler(ABC):
     """Base for all crawlers.
 
+    Args:
+        settings (CrawlerSettings | None): Settings for the crawler.
+            If not provided, the default settings will be used. Default is None.
+
     Attributes:
         logger (logging.Logger): Logger for the crawler.
         settings (CrawlerSettings): Settings for the crawler. Override it to set custom settings.
@@ -25,7 +29,10 @@ class BaseCrawler(ABC):
     _queue: asyncio.Queue
     _http_client: AsyncClient
 
-    def __init__(self) -> None:
+    def __init__(self, settings: CrawlerSettings | None = None) -> None:
+        if settings:
+            self.settings = settings
+
         if self.settings.setup_logging:
             self._setup_logging()
         self.logger = logging.getLogger(self.__class__.__name__)
@@ -57,8 +64,8 @@ class BaseCrawler(ABC):
     @abstractmethod
     async def generate_requests(self) -> AsyncIterator[Request]:
         """Yields requests to be processed."""
-        if False:  # pylint: disable=W0125
-            yield Request(url="https://example.com", callback=lambda _: None)  # just a stub for mypy
+        if False:  # pylint: disable=W0125  # pragma: no cover
+            yield Request(url="https://example.com/", callback=lambda _: None)  # just a stub for mypy
 
     async def run(self) -> None:
         """Runs the crawler."""
@@ -104,9 +111,12 @@ class BaseCrawler(ABC):
         self.stats.add_request()
 
         request_kwargs = request.model_dump(exclude_none=True, exclude={"callback"})
-        request_kwargs["params"] = request_kwargs.pop("query_params")
-        request_kwargs["data"] = request_kwargs.pop("form_data")
-        request_kwargs["json"] = request_kwargs.pop("json_data")
+        if "query_params" in request_kwargs:
+            request_kwargs["params"] = request_kwargs.pop("query_params")
+        if "form_data" in request_kwargs:
+            request_kwargs["data"] = request_kwargs.pop("form_data")
+        if "json_data" in request_kwargs:
+            request_kwargs["json"] = request_kwargs.pop("json_data")
         httpx_response = await self._http_client.request(**request_kwargs)
 
         response = await Response.from_httpx_response(httpx_response, request)

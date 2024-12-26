@@ -4,7 +4,15 @@ from httpx import URL
 from httpx import Request as HttpxRequest
 from httpx import Response as HttpxResponse
 
-from fastcrawl import Request, Response
+from fastcrawl import BasePipeline, Request, Response
+
+
+class MockStrPipeline(BasePipeline[str]):
+    """A mock class for testing the `BasePipeline` class."""
+
+    async def process_item(self, item: str) -> str | None:
+        """See `BasePipeline` class."""
+        return item * 2
 
 
 def create_request(url: URL | str = "https://example.com/", callback: Callable = lambda _: None, **kwargs) -> Request:

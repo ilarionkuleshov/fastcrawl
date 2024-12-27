@@ -38,7 +38,7 @@ jobs:
         run: poetry install
 
       - name: Publish report
-        run: poetry run smokeshow upload htmlcov
+        run: poetry run smokeshow upload .coverage_html
         env:
           SMOKESHOW_GITHUB_STATUS_DESCRIPTION: Coverage {coverage-percentage}
           SMOKESHOW_GITHUB_COVERAGE_THRESHOLD: 90

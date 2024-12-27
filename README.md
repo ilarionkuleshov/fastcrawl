@@ -70,3 +70,7 @@ Method `generate_requests` is executed once at the beginning of the crawl and sh
 In request callbacks, you can use the `Response` object to extract data using XPath selectors or other methods. Also you can yield another requests to follow links or scrape paginated content.
 
 In pipelines, you can implement custom logic for processing items, such as saving them to a database, sending them to a message queue, or logging them. When defining a pipeline, you specify the type of item it will work with. The example specifies the `ExampleItem` pydantic model, but you can use any type you need. If the crawler returned an item of a different type, the pipeline would be skipped for that item.
+
+
+## License
+This project is licensed under the MIT License.

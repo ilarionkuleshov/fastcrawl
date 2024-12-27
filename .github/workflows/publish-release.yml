@@ -17,7 +17,7 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: 3.12
 
       - name: Setup poetry
         uses: abatilo/actions-poetry@v2
@@ -25,13 +25,16 @@ jobs:
           poetry-version: latest
 
       - name: Install dependencies
-        run: poetry install
+        run: poetry install --without dev
 
       - name: Build project
         run: poetry build
 
-      - name: Configure testpypi repository
+      - name: Configure pypi repository
         run: poetry config repositories.testpypi https://test.pypi.org/legacy/
 
-      - name: Publish to testpypi
+      - name: Configure pypi token
+        run: poetry config pypi-token.testpypi ${{ secrets.PYPI_TOKEN }}
+
+      - name: Publish to pypi
         run: poetry publish --repository=testpypi

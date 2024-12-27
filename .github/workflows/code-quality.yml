@@ -80,15 +80,15 @@ jobs:
         run: poetry install
 
       - name: Combine coverage
-        run: coverage combine coverage
+        run: poetry run coverage combine coverage
 
-      - name: Show report
-        run: coverage report
+      - name: Show report summary
+        run: poetry run coverage report
 
-      - name: Generate HTML report
-        run: coverage html --title "Coverage for ${{ github.sha }}"
+      - name: Generate report
+        run: poetry run coverage html --title "Coverage for ${{ github.sha }}"
 
-      - name: Upload combined coverage artifact
+      - name: Upload report artifact
         uses: actions/upload-artifact@v4
         with:
           name: coverage-html

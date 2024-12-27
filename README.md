@@ -1,7 +1,6 @@
 # FastCrawl
-Fast and asynchronous web crawling and scraping library for Python.
 
-<p align="center">
+<p align="left">
 <a href="https://github.com/ilarionkuleshov/fastcrawl/actions/workflows/code-quality.yml/?query=event%3Apush+branch%3Amain">
     <img src="https://github.com/ilarionkuleshov/fastcrawl/actions/workflows/code-quality.yml/badge.svg?event=push&branch=main">
 </a>
@@ -16,7 +15,7 @@ Fast and asynchronous web crawling and scraping library for Python.
 </a>
 </p>
 
-FastCrawl is a Python library for web crawling and scraping, inspired by [Scrapy](https://github.com/scrapy/scrapy) but designed to run seamlessly in asynchronous applications. Built on top of [Httpx](https://github.com/encode/httpx), it provides a lightweight foundation for creating custom crawlers based on the `BaseCrawler` class. The library supports defining custom Pipelines for processing scraped items, which can be easily implemented by extending the `BasePipeline` class. While its functionality is still growing, FastCrawl offers flexible configuration options for the crawler, HTTP client, requests, and more.
+FastCrawl is a Python library for web crawling and scraping, inspired by [Scrapy](https://github.com/scrapy/scrapy) but designed to run seamlessly in asynchronous applications. Built on top of [Httpx](https://github.com/encode/httpx), it provides a lightweight foundation for creating custom crawlers based on the `BaseCrawler` class. The library supports defining custom Pipelines for processing scraped items, which can be easily implemented by extending the `BasePipeline` class. While its functionality is still growing, FastCrawl offers flexible settings options for the crawler, HTTP client, requests, and more.
 
 
 ## Installation
@@ -64,10 +63,10 @@ asyncio.run(ExampleCrawler().run())
 
 In this example, we define a custom `ExampleItem` model, a `ExamplePipeline` for processing scraped items, and an `ExampleCrawler` that generates requests and parses responses.
 
-Crawler can be configured using the `settings` class attribute or by passing a `CrawlerSettings` instance to the constructor. See the model definition for all available settings.
+Crawler can be set up using the `settings` class attribute or by passing a `CrawlerSettings` instance to the constructor. See the model definition for all available settings.
 
-Method `generate_requests` is executed once at the beginning of the crawl and should yield `Request` objects to start the crawl. Each request should have a callback function that will be called with the response object when the request is completed.
+Method `generate_requests` is executed once at the beginning of the crawl and should yield `Request` objects to start the crawl. Each request should have a callback function that will be called with the `Response` object when the request is completed.
 
-In request callbacks, you can use the `response` object to extract data using XPath selectors or other methods. Also you can yield another requests to follow links or scrape paginated content.
+In request callbacks, you can use the `Response` object to extract data using XPath selectors or other methods. Also you can yield another requests to follow links or scrape paginated content.
 
-In pipelines, you can implement custom logic for processing items, such as saving them to a database, sending them to a message queue, or logging them. When defining a pipeline, you specify the type of item it will work with. The example specifies the ExampleItem pydantic model, but you can use any type you need. If the crawler returned an item of a different type, the pipeline would be skipped for that item.
+In pipelines, you can implement custom logic for processing items, such as saving them to a database, sending them to a message queue, or logging them. When defining a pipeline, you specify the type of item it will work with. The example specifies the `ExampleItem` pydantic model, but you can use any type you need. If the crawler returned an item of a different type, the pipeline would be skipped for that item.

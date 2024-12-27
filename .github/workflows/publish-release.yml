@@ -14,11 +14,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build and publish release
-        uses: JRubics/poetry-publish@v2.0
+      - name: Setup python
+        uses: actions/setup-python@v5
         with:
-          python_version: 3.12
-          pypi_token: ${{ secrets.PYPI_TOKEN }}
-          poetry_install_options: "--without dev"
-          repository_name: "testpypi"
-          repository_url: "https://test.pypi.org/legacy/"
+          python-version: "3.12"
+
+      - name: Setup poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: latest
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Build project
+        run: poetry build
+
+      - name: Configure testpypi repository
+        run: poetry config repositories.testpypi https://test.pypi.org/legacy/
+
+      - name: Publish to testpypi
+        run: poetry publish --repository=testpypi

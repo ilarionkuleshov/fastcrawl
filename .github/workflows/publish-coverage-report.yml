@@ -6,6 +6,9 @@ on:
     types: [completed]
     branches: [main]
 
+permissions:
+  statuses: write
+
 jobs:
   publish-coverage-report:
     name: Publish coverage report

@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from abc import ABC, abstractmethod
-from typing import AsyncIterator
+from typing import AsyncIterator, Optional
 
 from httpx import AsyncClient, Limits
 
@@ -12,7 +12,7 @@ class BaseCrawler(ABC):
     """Base for all crawlers.
 
     Args:
-        settings (CrawlerSettings | None): Settings for the crawler.
+        settings (Optional[CrawlerSettings]): Settings for the crawler.
             If not provided, the default settings will be used. Default is None.
 
     Attributes:
@@ -29,7 +29,7 @@ class BaseCrawler(ABC):
     _queue: asyncio.Queue
     _http_client: AsyncClient
 
-    def __init__(self, settings: CrawlerSettings | None = None) -> None:
+    def __init__(self, settings: Optional[CrawlerSettings] = None) -> None:
         if settings:
             self.settings = settings
 

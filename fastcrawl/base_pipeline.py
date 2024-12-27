@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Generic, TypeVar, get_args
+from typing import Any, Generic, Optional, TypeVar, get_args
 
 T = TypeVar("T")
 
@@ -38,7 +38,7 @@ class BasePipeline(ABC, Generic[T]):
         return await self.process_item(item)
 
     @abstractmethod
-    async def process_item(self, item: T) -> T | None:
+    async def process_item(self, item: T) -> Optional[T]:
         """Processes an item returned by the crawler.
 
         Args:

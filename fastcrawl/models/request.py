@@ -1,3 +1,5 @@
+from typing import Optional, Union
+
 from httpx import URL
 from pydantic import BaseModel, ConfigDict
 
@@ -18,32 +20,32 @@ class Request(BaseModel):
 
     Attributes:
         method (str): HTTP method. Default is "GET".
-        url (URL | str): URL to request.
+        url (Union[URL, str]): URL to request.
         callback (RequestCallback): Callback to process the response.
-        query_params (QueryParams | None): Query parameters for the URL. Default is None.
-        headers (Headers | None): Headers for the request. Default is None.
-        cookies (Cookies | None): Cookies for the request. Default is None.
-        form_data (FormData | None): Form data for the request. Default is None.
-        json_data (JsonData | None): JSON data for the request. Default is None.
-        files (Files | None): Files for the request. Default is None.
-        auth (Auth | None): Authentication credentials. Default is None.
-        timeout (float | None): Timeout for the request in seconds. Default is None.
-        follow_redirects (bool | None): Whether to follow redirects. Default is None.
+        query_params (Optional[QueryParams]): Query parameters for the URL. Default is None.
+        headers (Optional[Headers]): Headers for the request. Default is None.
+        cookies (Optional[Cookies]): Cookies for the request. Default is None.
+        form_data (Optional[FormData]): Form data for the request. Default is None.
+        json_data (Optional[JsonData]): JSON data for the request. Default is None.
+        files (Optional[Files]): Files for the request. Default is None.
+        auth (Optional[Auth]): Authentication credentials. Default is None.
+        timeout (Optional[float]): Timeout for the request in seconds. Default is None.
+        follow_redirects (Optional[bool]): Whether to follow redirects. Default is None.
 
     """
 
     method: str = "GET"
-    url: URL | str
+    url: Union[URL, str]
     callback: RequestCallback
-    query_params: QueryParams | None = None
-    headers: Headers | None = None
-    cookies: Cookies | None = None
-    form_data: FormData | None = None
-    json_data: JsonData | None = None
-    files: Files | None = None
-    auth: Auth | None = None
-    timeout: float | None = None
-    follow_redirects: bool | None = None
+    query_params: Optional[QueryParams] = None
+    headers: Optional[Headers] = None
+    cookies: Optional[Cookies] = None
+    form_data: Optional[FormData] = None
+    json_data: Optional[JsonData] = None
+    files: Optional[Files] = None
+    auth: Optional[Auth] = None
+    timeout: Optional[float] = None
+    follow_redirects: Optional[bool] = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

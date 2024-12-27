@@ -1,4 +1,4 @@
-from typing import Any, AsyncIterator
+from typing import Any, AsyncIterator, Optional, Union
 
 import pytest
 from httpx import Limits
@@ -22,7 +22,7 @@ class MockStrDropPipeline(BasePipeline[str]):
         super().__init__()
         self.counter = 0
 
-    async def process_item(self, item: str) -> str | None:
+    async def process_item(self, item: str) -> Optional[str]:
         """See `BasePipeline` class."""
         self.counter += 1
         if self.counter == 1:
@@ -34,13 +34,13 @@ class MockCrawler(BaseCrawler):
     """A mock class for testing the `BaseCrawler` class.
 
     Args:
-        first_request_kwargs (dict[str, Any] | None): The keyword arguments to pass
+        first_request_kwargs (Optional[dict[str, Any]]): The keyword arguments to pass
             to the first request. Default is None.
         **kwargs: Additional keyword arguments to pass to the `BaseCrawler` class.
 
     """
 
-    def __init__(self, first_request_kwargs: dict[str, Any] | None = None, **kwargs) -> None:
+    def __init__(self, first_request_kwargs: Optional[dict[str, Any]] = None, **kwargs) -> None:
         super().__init__(**kwargs)
         self.first_request_kwargs = first_request_kwargs or {}
 
@@ -48,7 +48,9 @@ class MockCrawler(BaseCrawler):
         """See `BaseCrawler` class."""
         yield Request(url="https://example.com/", callback=self.parse_with_return, **self.first_request_kwargs)
 
-    async def parse_with_return(self, response: Response) -> AsyncIterator[Request | str]:  # pylint: disable=W0613
+    async def parse_with_return(
+        self, response: Response  # pylint: disable=W0613
+    ) -> AsyncIterator[Union[Request, str]]:
         """Mock parse method that returns an item and request."""
         yield "test_item_1"
         yield "test_item_2"

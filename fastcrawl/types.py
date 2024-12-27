@@ -5,16 +5,18 @@ from typing import (
     Callable,
     Coroutine,
     Mapping,
+    Optional,
     Sequence,
+    Union,
 )
 
 if TYPE_CHECKING:
     from fastcrawl.models import Response  # pragma: no cover
 
-PrimitiveData = str | int | float | bool | None
+PrimitiveData = Optional[Union[str, int, float, bool]]
 
-RequestCallback = Callable[["Response"], Coroutine[Any, Any, AsyncIterator[Any] | None] | AsyncIterator[Any]]
-QueryParams = Mapping[str, PrimitiveData | Sequence[PrimitiveData]]
+RequestCallback = Callable[["Response"], Union[Coroutine[Any, Any, Optional[AsyncIterator[Any]]], AsyncIterator[Any]]]
+QueryParams = Mapping[str, Union[PrimitiveData, Sequence[PrimitiveData]]]
 Headers = Mapping[str, str]
 Cookies = Mapping[str, str]
 FormData = Mapping[str, Any]

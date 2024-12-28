@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastcrawl"
-version = "0.1.0"
+version = "0.1.1"
 description = "Fast and asynchronous web crawling and scraping library for Python."
 authors = ["ilarionkuleshov <ilarion.kuleshov@gmail.com>"]
 readme = "README.md"

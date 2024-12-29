@@ -21,9 +21,3 @@ async def test_process_item_with_check() -> None:
     pipeline = MockStrPipeline()
     assert await pipeline.process_item_with_check("test") == await pipeline.process_item("test")
     assert await pipeline.process_item_with_check(1) == 1
-
-
-def test_str() -> None:
-    """Tests the `__str__` method of the `BasePipeline` class."""
-    pipeline = MockStrPipeline()
-    assert str(pipeline) == "<MockStrPipeline[str]>"

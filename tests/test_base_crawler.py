@@ -6,28 +6,12 @@ from pytest_httpx import HTTPXMock
 
 from fastcrawl import (
     BaseCrawler,
-    BasePipeline,
-    CrawlerHttpClientSettings,
     CrawlerSettings,
+    HttpClientSettings,
     Request,
     Response,
 )
-from tests.utils import MockStrPipeline
-
-
-class MockStrDropPipeline(BasePipeline[str]):
-    """A mock class for testing the `BasePipeline` class."""
-
-    def __init__(self):
-        super().__init__()
-        self.counter = 0
-
-    async def process_item(self, item: str) -> Optional[str]:
-        """See `BasePipeline` class."""
-        self.counter += 1
-        if self.counter == 1:
-            return item
-        return None
+from tests.utils import MockStrDropPipeline, MockStrPipeline
 
 
 class MockCrawler(BaseCrawler):
@@ -68,7 +52,7 @@ def test_get_http_client_kwargs() -> None:
 
     crawler = MockCrawler(
         settings=CrawlerSettings(
-            http_client=CrawlerHttpClientSettings(
+            http_client=HttpClientSettings(
                 query_params=query_params,
                 max_connections=limits.max_connections,
                 max_keepalive_connections=limits.max_keepalive_connections,
@@ -90,7 +74,7 @@ async def test_run(httpx_mock: HTTPXMock) -> None:
 
     crawler = MockCrawler(
         settings=CrawlerSettings(
-            pipelines=[MockStrPipeline(), MockStrDropPipeline()],
+            pipelines=[MockStrPipeline, MockStrDropPipeline],
         ),
         first_request_kwargs={
             "query_params": {"key": "value"},

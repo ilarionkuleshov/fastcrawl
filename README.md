@@ -47,7 +47,7 @@ class ExamplePipeline(BasePipeline[ExampleItem]):
 
 class ExampleCrawler(BaseCrawler):
     settings = CrawlerSettings(
-        pipelines=[ExamplePipeline()],
+        pipelines=[ExamplePipeline],
     )
 
     async def generate_requests(self) -> AsyncIterator[Request]:

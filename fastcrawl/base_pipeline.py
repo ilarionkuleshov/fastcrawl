@@ -2,6 +2,9 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Any, Generic, Optional, TypeVar, get_args
 
+from fastcrawl.models.log_settings import LogSettings
+from fastcrawl.utils.log import get_logger
+
 T = TypeVar("T")
 
 
@@ -16,8 +19,8 @@ class BasePipeline(ABC, Generic[T]):
     logger: logging.Logger
     _expected_type: type[T]
 
-    def __init__(self) -> None:
-        self.logger = logging.getLogger(self.__class__.__name__)
+    def __init__(self, log_settings: LogSettings) -> None:
+        self.logger = get_logger(self.__class__.__name__, log_settings)
         self._expected_type = get_args(self.__orig_bases__[0])[0]  # type: ignore[attr-defined]  # pylint: disable=E1101
 
     async def process_item_with_check(self, item: Any) -> Any:
@@ -55,6 +58,3 @@ class BasePipeline(ABC, Generic[T]):
 
     async def on_crawler_finish(self) -> None:
         """Called when the crawler finishes."""
-
-    def __str__(self) -> str:
-        return f"<{self.__class__.__name__}[{self._expected_type.__name__}]>"

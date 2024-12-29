@@ -4,15 +4,33 @@ from httpx import URL
 from httpx import Request as HttpxRequest
 from httpx import Response as HttpxResponse
 
-from fastcrawl import BasePipeline, Request, Response
+from fastcrawl import BasePipeline, LogSettings, Request, Response
 
 
 class MockStrPipeline(BasePipeline[str]):
     """A mock class for testing the `BasePipeline` class."""
 
+    def __init__(self, log_settings: LogSettings = LogSettings()) -> None:
+        super().__init__(log_settings)
+
     async def process_item(self, item: str) -> Optional[str]:
         """See `BasePipeline` class."""
         return item * 2
+
+
+class MockStrDropPipeline(BasePipeline[str]):
+    """A mock class for testing the `BasePipeline` class."""
+
+    def __init__(self, log_settings: LogSettings = LogSettings()) -> None:
+        super().__init__(log_settings)
+        self.counter = 0
+
+    async def process_item(self, item: str) -> Optional[str]:
+        """See `BasePipeline` class."""
+        self.counter += 1
+        if self.counter == 1:
+            return item
+        return None
 
 
 def create_request(

@@ -6,7 +6,7 @@ from httpx import URL
 from parsel import Selector
 
 from fastcrawl import Response
-from tests.utils import create_httpx_response, create_request, create_response
+from tests.mocks import create_httpx_response, create_request, create_response
 
 
 async def mock_iter_content(chunks: list[bytes]) -> AsyncIterator[bytes]:

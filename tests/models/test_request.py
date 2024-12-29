@@ -1,7 +1,7 @@
 import pytest
 from httpx import URL
 
-from tests.utils import create_request
+from tests.mocks import create_request
 
 
 @pytest.mark.parametrize(

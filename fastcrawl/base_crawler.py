@@ -1,11 +1,15 @@
 import asyncio
 import logging
 from abc import ABC, abstractmethod
-from typing import AsyncIterator, Optional
+from typing import TYPE_CHECKING, AsyncIterator, Optional
 
 from httpx import AsyncClient, Limits
 
 from fastcrawl.models import CrawlerSettings, CrawlerStats, Request, Response
+from fastcrawl.utils.log import get_logger, setup_logging
+
+if TYPE_CHECKING:
+    from fastcrawl.base_pipeline import BasePipeline  # pragma: no cover
 
 
 class BaseCrawler(ABC):
@@ -26,6 +30,7 @@ class BaseCrawler(ABC):
     settings: CrawlerSettings = CrawlerSettings()
     stats: CrawlerStats
 
+    _pipelines: list["BasePipeline"]
     _queue: asyncio.Queue
     _http_client: AsyncClient
 
@@ -33,22 +38,13 @@ class BaseCrawler(ABC):
         if settings:
             self.settings = settings
 
-        if self.settings.setup_logging:
-            self._setup_logging()
-        self.logger = logging.getLogger(self.__class__.__name__)
+        setup_logging(self.settings.log)
+        self.logger = get_logger(self.__class__.__name__, self.settings.log)
         self.stats = CrawlerStats()
+
+        self._pipelines = [pipeline(self.settings.log) for pipeline in self.settings.pipelines]
         self._queue = asyncio.Queue()
         self._http_client = AsyncClient(**self._get_http_client_kwargs())
-
-    def _setup_logging(self) -> None:
-        """Sets up logging for the crawler."""
-        logging.basicConfig(
-            level=self.settings.logging.level,
-            format=self.settings.logging.format,
-        )
-        logging.getLogger("asyncio").setLevel(self.settings.logging.level_asyncio)
-        logging.getLogger("httpx").setLevel(self.settings.logging.level_httpx)
-        logging.getLogger("httpcore").setLevel(self.settings.logging.level_httpcore)
 
     def _get_http_client_kwargs(self):
         kwargs = self.settings.http_client.model_dump()
@@ -71,7 +67,7 @@ class BaseCrawler(ABC):
         """Runs the crawler."""
         self.logger.info("Running crawler with settings: %s", self.settings.model_dump_json(indent=2))
         self.stats.start_crawling()
-        for pipeline in self.settings.pipelines:
+        for pipeline in self._pipelines:
             await pipeline.on_crawler_start()
 
         async for request in self.generate_requests():
@@ -84,7 +80,7 @@ class BaseCrawler(ABC):
 
         await self._http_client.aclose()
 
-        for pipeline in self.settings.pipelines:
+        for pipeline in self._pipelines:
             await pipeline.on_crawler_finish()
         self.stats.finish_crawling()
         self.logger.info("Crawling finished with stats: %s", self.stats.model_dump_json(indent=2))
@@ -129,7 +125,7 @@ class BaseCrawler(ABC):
                 if isinstance(item, Request):
                     await self._queue.put(item)
                 elif item is not None:
-                    for pipeline in self.settings.pipelines:
+                    for pipeline in self._pipelines:
                         item = await pipeline.process_item_with_check(item)
                         if item is None:
                             break

@@ -11,7 +11,7 @@ from fastcrawl import (
     Request,
     Response,
 )
-from tests.utils import MockStrDropPipeline, MockStrPipeline
+from tests.mocks import MockStrDropPipeline, MockStrPipeline
 
 
 class MockCrawler(BaseCrawler):

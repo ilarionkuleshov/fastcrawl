@@ -1,6 +1,6 @@
 import pytest
 
-from tests.utils import MockStrPipeline
+from tests.mocks import MockStrPipeline
 
 
 def test_logger() -> None:

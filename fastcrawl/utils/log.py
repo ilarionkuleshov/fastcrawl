@@ -27,6 +27,9 @@ def get_logger(name: str, settings: LogSettings) -> Logger:
         settings (LogSettings): Settings for the logging.
 
     """
+    if settings.logger_name_suffix:
+        name += f"_{settings.logger_name_suffix}"
+
     logger = logging.getLogger(name)
     logger.setLevel(settings.level)
 

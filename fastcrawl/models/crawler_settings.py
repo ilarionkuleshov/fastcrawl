@@ -1,4 +1,4 @@
-from typing import Annotated, Type
+from typing import Annotated
 
 from dotenv import find_dotenv
 from pydantic.functional_serializers import PlainSerializer
@@ -14,7 +14,7 @@ class CrawlerSettings(BaseSettings):
 
     Attributes:
         workers (int): Number of workers to process requests. Default is 15.
-        pipelines (list[Type[BasePipeline]]): List of pipelines to process items.
+        pipelines (list[type[BasePipeline]]): List of pipelines to process items.
             Pipelines will be executed in the order they are defined. Default is [].
         log (LogSettings): Log settings for the crawler. Default is LogSettings().
         http_client (HttpClientSettings): HTTP client settings for the crawler. Default is HttpClientSettings().
@@ -22,7 +22,7 @@ class CrawlerSettings(BaseSettings):
     """
 
     workers: int = 15
-    pipelines: list[Annotated[Type[BasePipeline], PlainSerializer(lambda x: x.__name__)]] = []
+    pipelines: list[Annotated[type[BasePipeline], PlainSerializer(lambda x: x.__name__)]] = []
     log: LogSettings = LogSettings()
     http_client: HttpClientSettings = HttpClientSettings()
 

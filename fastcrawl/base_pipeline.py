@@ -1,54 +1,37 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Generic, Optional, TypeVar, get_args
+from typing import Any, Optional
 
 from fastcrawl.models.log_settings import LogSettings
 from fastcrawl.utils.log import get_logger
 
-T = TypeVar("T")
 
-
-class BasePipeline(ABC, Generic[T]):
+class BasePipeline(ABC):
     """Base for all pipelines.
 
     Attributes:
+        allowed_items (Optional[list[type]]): Allowed types of items to process.
+            If provided, only items of these types will be processed and other items will be returned as is.
+            If not provided, all items will be processed. Default is None.
         logger (logging.Logger): Logger for the crawler.
 
     """
 
+    allowed_items: Optional[list[type]] = None
     logger: logging.Logger
-    _expected_type: type[T]
 
     def __init__(self, log_settings: LogSettings) -> None:
         self.logger = get_logger(self.__class__.__name__, log_settings)
-        self._expected_type = get_args(self.__orig_bases__[0])[0]  # type: ignore[attr-defined]  # pylint: disable=E1101
 
-    async def process_item_with_check(self, item: Any) -> Any:
-        """Processes an item with type checking.
-
-        Note:
-            If the item is not an instance of the expected type, it will be returned as is.
+    @abstractmethod
+    async def process_item(self, item: Any) -> Optional[Any]:
+        """Processes an item returned by the crawler.
 
         Args:
             item (Any): Item to process.
 
         Returns:
-            Any: Processed item or the item itself.
-
-        """
-        if not isinstance(item, self._expected_type):
-            return item
-        return await self.process_item(item)
-
-    @abstractmethod
-    async def process_item(self, item: T) -> Optional[T]:
-        """Processes an item returned by the crawler.
-
-        Args:
-            item (T): Item to process.
-
-        Returns:
-            T: Processed item.
+            Any: Processed item.
             None: If the item should be dropped and not passed to the next pipelines.
 
         """
@@ -58,3 +41,18 @@ class BasePipeline(ABC, Generic[T]):
 
     async def on_crawler_finish(self) -> None:
         """Called when the crawler finishes."""
+
+    async def process_allowed_item(self, item: Any) -> Optional[Any]:
+        """Processes an item if it is allowed.
+
+        Args:
+            item (Any): Item to process.
+
+        Returns:
+            Any: Processed item.
+            None: If the item should be dropped and not passed to the next pipelines.
+
+        """
+        if self.allowed_items is None or isinstance(item, tuple(self.allowed_items)):
+            return await self.process_item(item)
+        return item

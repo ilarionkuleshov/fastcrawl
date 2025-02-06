@@ -7,8 +7,10 @@ from httpx import Response as HttpxResponse
 from fastcrawl import BasePipeline, LogSettings, Request, Response
 
 
-class MockStrPipeline(BasePipeline[str]):
+class MockStrPipeline(BasePipeline):
     """A mock class for testing the `BasePipeline` class."""
+
+    allowed_items = [str]
 
     def __init__(self, log_settings: LogSettings = LogSettings()) -> None:
         super().__init__(log_settings)
@@ -18,8 +20,10 @@ class MockStrPipeline(BasePipeline[str]):
         return item * 2
 
 
-class MockStrDropPipeline(BasePipeline[str]):
+class MockStrDropPipeline(BasePipeline):
     """A mock class for testing the `BasePipeline` class."""
+
+    allowed_items = [str]
 
     def __init__(self, log_settings: LogSettings = LogSettings()) -> None:
         super().__init__(log_settings)

@@ -15,7 +15,7 @@
 </a>
 </p>
 
-FastCrawl is a Python library for web crawling and scraping, inspired by [Scrapy](https://github.com/scrapy/scrapy) but designed to run seamlessly in asynchronous applications. Built on top of [Httpx](https://github.com/encode/httpx), it provides a lightweight foundation for creating custom crawlers based on the `BaseCrawler` class. The library supports defining custom Pipelines for processing scraped items, which can be easily implemented by extending the `BasePipeline` class. While its functionality is still growing, FastCrawl offers flexible settings options for the crawler, HTTP client, requests, and more.
+FastCrawl is a Python library for web crawling and scraping, inspired by [Scrapy](https://github.com/scrapy/scrapy) but designed to run seamlessly in asynchronous applications. Built on top of [Httpx](https://github.com/encode/httpx), it provides a lightweight foundation for creating custom crawlers based on the `BaseCrawler` class. The library supports defining custom pipelines for processing scraped items, which can be easily implemented by extending the `BasePipeline` class. While its functionality is still growing, FastCrawl offers flexible settings options for the crawler, HTTP client, requests, and more.
 
 
 ## Installation
@@ -39,8 +39,10 @@ class ExampleItem(BaseModel):
     title: str
 
 
-class ExamplePipeline(BasePipeline[ExampleItem]):
-    async def process_item(self, item: ExampleItem) -> ExampleItem | None:
+class ExamplePipeline(BasePipeline):
+    allowed_items = [ExampleItem]
+
+    async def process_item(self, item: ExampleItem) -> ExampleItem:
         self.logger.info(f"Processing item: {item}")
         return item
 
@@ -69,7 +71,7 @@ Method `generate_requests` is executed once at the beginning of the crawl and sh
 
 In request callbacks, you can use the `Response` object to extract data using XPath selectors or other methods. Also you can yield another requests to follow links or scrape paginated content.
 
-In pipelines, you can implement custom logic for processing items, such as saving them to a database, sending them to a message queue, or logging them. When defining a pipeline, you specify the type of item it will work with. The example specifies the `ExampleItem` pydantic model, but you can use any type you need. If the crawler returned an item of a different type, the pipeline would be skipped for that item.
+In pipelines, you can implement custom logic for processing items, such as saving them to a database, sending them to a message queue, or logging them. When defining a pipeline, you specify allowed types of items. The example specifies the `ExampleItem` pydantic model, but you can use any type you need. If the crawler returned an item of a different type, the pipeline would be skipped for that item. But if you don't specify any allowed items at all, then this check will not occur.
 
 
 ## License

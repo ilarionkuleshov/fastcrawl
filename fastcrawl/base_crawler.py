@@ -66,8 +66,6 @@ class BaseCrawler(ABC):
     @abstractmethod
     async def generate_requests(self) -> AsyncIterator[Request]:
         """Yields requests to be processed."""
-        if False:  # pylint: disable=W0125  # pragma: no cover
-            yield Request(url="https://example.com/", callback=lambda _: None)  # just a stub for mypy
 
     async def run(self) -> None:
         """Runs the crawler."""
@@ -77,7 +75,7 @@ class BaseCrawler(ABC):
         for pipeline in self._pipelines:
             await pipeline.on_start()
 
-        async for request in self.generate_requests():
+        async for request in self.generate_requests():  # type: ignore[attr-defined]
             await self._queue.put(request)
 
         workers = [asyncio.create_task(self._worker()) for _ in range(self.settings.workers)]

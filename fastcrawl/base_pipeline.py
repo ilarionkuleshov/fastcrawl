@@ -36,10 +36,10 @@ class BasePipeline(ABC):
 
         """
 
-    async def on_crawler_start(self) -> None:
+    async def on_start(self) -> None:
         """Called when the crawler starts."""
 
-    async def on_crawler_finish(self) -> None:
+    async def on_finish(self) -> None:
         """Called when the crawler finishes."""
 
     async def process_allowed_item(self, item: Any) -> Optional[Any]:

@@ -59,7 +59,7 @@ class BaseCrawler(ABC):
 
     async def on_start(self) -> None:
         """Called when the crawler starts."""
-    
+
     async def on_finish(self) -> None:
         """Called when the crawler finishes."""
 
@@ -75,7 +75,7 @@ class BaseCrawler(ABC):
         self.stats.start_crawling()
         await self.on_start()
         for pipeline in self._pipelines:
-            await pipeline.on_crawler_start()
+            await pipeline.on_start()
 
         async for request in self.generate_requests():
             await self._queue.put(request)
@@ -89,7 +89,7 @@ class BaseCrawler(ABC):
 
         await self.on_finish()
         for pipeline in self._pipelines:
-            await pipeline.on_crawler_finish()
+            await pipeline.on_finish()
         self.stats.finish_crawling()
         self.logger.info("Crawling finished with stats: %s", self.stats.model_dump_json(indent=2))
 

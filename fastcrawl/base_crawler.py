@@ -57,6 +57,12 @@ class BaseCrawler(ABC):
         )
         return kwargs
 
+    async def on_start(self) -> None:
+        """Called when the crawler starts."""
+    
+    async def on_finish(self) -> None:
+        """Called when the crawler finishes."""
+
     @abstractmethod
     async def generate_requests(self) -> AsyncIterator[Request]:
         """Yields requests to be processed."""
@@ -67,6 +73,7 @@ class BaseCrawler(ABC):
         """Runs the crawler."""
         self.logger.info("Running crawler with settings: %s", self.settings.model_dump_json(indent=2))
         self.stats.start_crawling()
+        await self.on_start()
         for pipeline in self._pipelines:
             await pipeline.on_crawler_start()
 
@@ -80,6 +87,7 @@ class BaseCrawler(ABC):
 
         await self._http_client.aclose()
 
+        await self.on_finish()
         for pipeline in self._pipelines:
             await pipeline.on_crawler_finish()
         self.stats.finish_crawling()

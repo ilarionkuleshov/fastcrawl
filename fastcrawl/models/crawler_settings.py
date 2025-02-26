@@ -18,6 +18,8 @@ class CrawlerSettings(BaseSettings):
             Pipelines will be executed in the order they are defined. Default is [].
         log (LogSettings): Log settings for the crawler. Default is LogSettings().
         http_client (HttpClientSettings): HTTP client settings for the crawler. Default is HttpClientSettings().
+        additional_success_status_codes (list[int]): List of additional response status codes which will be
+            processed as success responses in callbacks (200-299 already included). Default is [].
 
     """
 
@@ -25,6 +27,7 @@ class CrawlerSettings(BaseSettings):
     pipelines: list[Annotated[type[BasePipeline], PlainSerializer(lambda x: x.__name__)]] = []
     log: LogSettings = LogSettings()
     http_client: HttpClientSettings = HttpClientSettings()
+    additional_success_status_codes: list[int] = []
 
     model_config = SettingsConfigDict(
         env_file=find_dotenv(),

@@ -16,6 +16,8 @@ if TYPE_CHECKING:
 PrimitiveData = Optional[Union[str, int, float, bool]]
 
 RequestCallback = Callable[["Response"], Union[Coroutine[Any, Any, Optional[AsyncIterator[Any]]], AsyncIterator[Any]]]
+RequestErrback = RequestCallback
+
 QueryParams = Mapping[str, Union[PrimitiveData, Sequence[PrimitiveData]]]
 Headers = Mapping[str, str]
 Cookies = Mapping[str, str]

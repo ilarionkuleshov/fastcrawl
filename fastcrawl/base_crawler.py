@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, AsyncIterator, Optional
+from typing import TYPE_CHECKING, Any, AsyncIterator, Optional
 
 from httpx import AsyncClient, Limits
 
@@ -46,7 +46,7 @@ class BaseCrawler(ABC):
         self._queue = asyncio.Queue()
         self._http_client = AsyncClient(**self._get_http_client_kwargs())
 
-    def _get_http_client_kwargs(self):
+    def _get_http_client_kwargs(self) -> dict[str, Any]:
         kwargs = self.settings.http_client.model_dump()
         kwargs["params"] = kwargs.pop("query_params")
         kwargs["trust_env"] = False
@@ -56,6 +56,12 @@ class BaseCrawler(ABC):
             keepalive_expiry=kwargs.pop("keepalive_expiry"),
         )
         return kwargs
+
+    async def on_start(self) -> None:
+        """Called when the crawler starts."""
+
+    async def on_finish(self) -> None:
+        """Called when the crawler finishes."""
 
     @abstractmethod
     async def generate_requests(self) -> AsyncIterator[Request]:
@@ -67,8 +73,9 @@ class BaseCrawler(ABC):
         """Runs the crawler."""
         self.logger.info("Running crawler with settings: %s", self.settings.model_dump_json(indent=2))
         self.stats.start_crawling()
+        await self.on_start()
         for pipeline in self._pipelines:
-            await pipeline.on_crawler_start()
+            await pipeline.on_start()
 
         async for request in self.generate_requests():
             await self._queue.put(request)
@@ -80,13 +87,13 @@ class BaseCrawler(ABC):
 
         await self._http_client.aclose()
 
+        await self.on_finish()
         for pipeline in self._pipelines:
-            await pipeline.on_crawler_finish()
+            await pipeline.on_finish()
         self.stats.finish_crawling()
         self.logger.info("Crawling finished with stats: %s", self.stats.model_dump_json(indent=2))
 
     async def _worker(self) -> None:
-        """Worker to process requests from the queue."""
         while True:
             request = await self._queue.get()
             try:
@@ -97,31 +104,24 @@ class BaseCrawler(ABC):
                 self._queue.task_done()
 
     async def _process_request(self, request: Request) -> None:
-        """Executes the request, callback and processes the results.
-
-        Args:
-            request (Request): The request to process.
-
-        """
         self.logger.debug("Processing request: %s", request)
         self.stats.add_request()
 
-        request_kwargs = request.model_dump(exclude_none=True, exclude={"callback"})
-        if "query_params" in request_kwargs:
-            request_kwargs["params"] = request_kwargs.pop("query_params")
-        if "form_data" in request_kwargs:
-            request_kwargs["data"] = request_kwargs.pop("form_data")
-        if "json_data" in request_kwargs:
-            request_kwargs["json"] = request_kwargs.pop("json_data")
-        httpx_response = await self._http_client.request(**request_kwargs)
-
+        httpx_response = await self._http_client.request(**self._get_request_kwargs(request))
         response = await Response.from_httpx_response(httpx_response, request)
         self.logger.debug("Got response: %s", response)
         self.stats.add_response(response.status_code)
 
-        callback_result = request.callback(response)
-        if hasattr(callback_result, "__aiter__"):
-            async for item in callback_result:
+        if httpx_response.is_success or response.status_code in self.settings.additional_success_status_codes:
+            result = request.callback(response)
+        elif request.errback:
+            result = request.errback(response)
+        else:
+            self.logger.warning("Response not processed, cause no errback provided: %s", response)
+            return
+
+        if hasattr(result, "__aiter__"):
+            async for item in result:
                 if isinstance(item, Request):
                     await self._queue.put(item)
                 elif item is not None:
@@ -132,4 +132,14 @@ class BaseCrawler(ABC):
                     else:
                         self.stats.add_item()
         else:
-            await callback_result
+            await result
+
+    def _get_request_kwargs(self, request: Request) -> dict[str, Any]:
+        kwargs = request.model_dump(exclude_none=True, exclude={"callback", "errback"})
+        if "query_params" in kwargs:
+            kwargs["params"] = kwargs.pop("query_params")
+        if "form_data" in kwargs:
+            kwargs["data"] = kwargs.pop("form_data")
+        if "json_data" in kwargs:
+            kwargs["json"] = kwargs.pop("json_data")
+        return kwargs

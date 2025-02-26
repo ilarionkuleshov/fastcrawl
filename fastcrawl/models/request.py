@@ -12,6 +12,7 @@ from fastcrawl.types import (
     JsonData,
     QueryParams,
     RequestCallback,
+    RequestErrback,
 )
 
 
@@ -22,6 +23,7 @@ class Request(BaseModel):
         method (str): HTTP method. Default is "GET".
         url (Union[URL, str]): URL to request.
         callback (RequestCallback): Callback to process the response.
+        errback (Optional[RequestErrback]): Errback to process the error. Default is None.
         query_params (Optional[QueryParams]): Query parameters for the URL. Default is None.
         headers (Optional[Headers]): Headers for the request. Default is None.
         cookies (Optional[Cookies]): Cookies for the request. Default is None.
@@ -37,6 +39,7 @@ class Request(BaseModel):
     method: str = "GET"
     url: Union[URL, str]
     callback: RequestCallback
+    errback: Optional[RequestErrback] = None
     query_params: Optional[QueryParams] = None
     headers: Optional[Headers] = None
     cookies: Optional[Cookies] = None

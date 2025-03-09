@@ -113,7 +113,8 @@ class BaseCrawler(ABC):
         self.stats.add_response(response.status_code)
 
         if httpx_response.is_success or response.status_code in self.settings.additional_success_status_codes:
-            result = request.callback(response)
+            callback_args = (response, request.callback_data) if request.callback_data else (response,)
+            result = request.callback(*callback_args)
         elif request.errback:
             result = request.errback(response)
         else:
@@ -135,7 +136,7 @@ class BaseCrawler(ABC):
             await result
 
     def _get_request_kwargs(self, request: Request) -> dict[str, Any]:
-        kwargs = request.model_dump(exclude_none=True, exclude={"callback", "errback"})
+        kwargs = request.model_dump(exclude_none=True, exclude={"callback", "callback_data", "errback"})
         if "query_params" in kwargs:
             kwargs["params"] = kwargs.pop("query_params")
         if "form_data" in kwargs:

@@ -15,8 +15,11 @@ if TYPE_CHECKING:
 
 PrimitiveData = Optional[Union[str, int, float, bool]]
 
-RequestCallback = Callable[["Response"], Union[Coroutine[Any, Any, Optional[AsyncIterator[Any]]], AsyncIterator[Any]]]
-RequestErrback = RequestCallback
+RequestCallback = Union[
+    Callable[["Response"], Union[Coroutine[Any, Any, Optional[AsyncIterator[Any]]], AsyncIterator[Any]]],
+    Callable[["Response", Any], Union[Coroutine[Any, Any, Optional[AsyncIterator[Any]]], AsyncIterator[Any]]],
+]
+RequestErrback = Callable[["Response"], Union[Coroutine[Any, Any, Optional[AsyncIterator[Any]]], AsyncIterator[Any]]]
 
 QueryParams = Mapping[str, Union[PrimitiveData, Sequence[PrimitiveData]]]
 Headers = Mapping[str, str]

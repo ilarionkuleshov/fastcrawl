@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 from httpx import URL
 from pydantic import BaseModel, ConfigDict
@@ -23,6 +23,7 @@ class Request(BaseModel):
         method (str): HTTP method. Default is "GET".
         url (Union[URL, str]): URL to request.
         callback (RequestCallback): Callback to process the response.
+        callback_data (Optional[Any]): Data to pass to the callback. Default is None.
         errback (Optional[RequestErrback]): Errback to process the error. Default is None.
         query_params (Optional[QueryParams]): Query parameters for the URL. Default is None.
         headers (Optional[Headers]): Headers for the request. Default is None.
@@ -39,6 +40,7 @@ class Request(BaseModel):
     method: str = "GET"
     url: Union[URL, str]
     callback: RequestCallback
+    callback_data: Optional[Any] = None
     errback: Optional[RequestErrback] = None
     query_params: Optional[QueryParams] = None
     headers: Optional[Headers] = None

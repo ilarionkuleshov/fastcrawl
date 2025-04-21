@@ -10,24 +10,35 @@ class HttpClientSettings(BaseModel):
     """HTTP client settings model.
 
     Attributes:
-        base_url (Union[URL, str]): Base URL for the HTTP client. Default is "".
-        auth (Optional[Auth]): Authentication for the HTTP client. Default is None.
-        query_params (Optional[QueryParams]): Query parameters for the HTTP client. Default is None.
-        headers (Optional[Headers]): Headers for the HTTP client. Default is None.
-        cookies (Optional[Cookies]): Cookies for the HTTP client. Default is None.
+        base_url (Union[URL, str]): Base URL for the HTTP client.
+            Default is "".
+        auth (Optional[Auth]): Authentication for the HTTP client.
+            Default is None.
+        query_params (Optional[QueryParams]): Query parameters
+            for the HTTP client. Default is None.
+        headers (Optional[Headers]): Headers for the HTTP client.
+            Default is None.
+        cookies (Optional[Cookies]): Cookies for the HTTP client.
+            Default is None.
         verify (bool): Whether to verify SSL certificates. Default is True.
         http1 (bool): Whether to use HTTP/1.1. Default is True.
         http2 (bool): Whether to use HTTP/2. Default is False.
-        proxy (Optional[Union[URL, str]]): Proxy for the HTTP client. Default is None.
+        proxy (Optional[Union[URL, str]]): Proxy for the HTTP client.
+            Default is None.
         timeout (float): Timeout for the HTTP client. Default is 5.0.
-        max_connections (Optional[int]): Specifies the maximum number of concurrent connections allowed. Default is 100.
-        max_keepalive_connections (Optional[int]): The maximum number of keep-alive connections the pool can maintain.
+        max_connections (Optional[int]): Specifies the maximum number
+            of concurrent connections allowed. Default is 100.
+        max_keepalive_connections (Optional[int]): The maximum number
+            of keep-alive connections the pool can maintain.
             Must not exceed `max_connections`. Default is 20.
-        keepalive_expiry (Optional[float]): The maximum duration in seconds that a keep-alive
-            connection can remain idle. Default is 5.0.
+        keepalive_expiry (Optional[float]): The maximum duration
+            in seconds that a keep-alive connection can remain idle.
+            Default is 5.0.
         follow_redirects (bool): Whether to follow redirects. Default is False.
-        max_redirects (int): Maximum number of redirects to follow. Default is 20.
-        default_encoding (str): Default encoding for the HTTP client. Default is "utf-8".
+        max_redirects (int): Maximum number of redirects to follow.
+            Default is 20.
+        default_encoding (str): Default encoding for the HTTP client.
+            Default is "utf-8".
 
     """
 

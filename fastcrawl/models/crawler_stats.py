@@ -11,10 +11,14 @@ class CrawlerStats(BaseModel):
         To update statistics while crawling, use corresponding methods.
 
     Attributes:
-        started_at (Optional[datetime]): The time when the crawling started. Default is None.
-        finished_at (Optional[datetime]): The time when the crawling finished. Default is None.
-        requests (Optional[int]): The number of requests made during the crawling. Default is None.
-        responses_by_codes (Optional[dict[int, int]]): The number of responses by status code. Default is None.
+        started_at (Optional[datetime]): The time when the crawling started.
+            Default is None.
+        finished_at (Optional[datetime]): The time when the crawling finished.
+            Default is None.
+        requests (Optional[int]): The number of requests made
+            during the crawling. Default is None.
+        responses_by_codes (Optional[dict[int, int]]): The number of responses
+            by status code. Default is None.
         items (Optional[int]): The number of items crawled. Default is None.
 
     """

@@ -12,7 +12,11 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from fastcrawl.base_crawler import BaseCrawler
 
-app = typer.Typer(name="FastCrawl", help="FastCrawl CLI for running crawlers.", add_completion=False)
+app = typer.Typer(
+    name="FastCrawl",
+    help="FastCrawl CLI for running crawlers.",
+    add_completion=False,
+)
 
 
 @app.command("list", help="List all available crawlers.")
@@ -22,7 +26,10 @@ def list_crawlers(
         exists=True,
         file_okay=False,
         resolve_path=True,
-        help="Path to the directory containing crawlers. If not provided, defaults to the current working directory.",
+        help=(
+            "Path to the directory containing crawlers. "
+            "If not provided, defaults to the current working directory."
+        ),
     )
 ) -> None:
     """Shows all available crawlers in the specified directory.
@@ -48,9 +55,14 @@ def list_crawlers(
 
     if crawlers:
         crawlers_length = len(crawlers)
-        rich.print(f"[bold green]Found {crawlers_length} crawler{'s' if crawlers_length > 1 else ''}[/bold green]\n")
+        rich.print(
+            f"[bold green]Found {crawlers_length} "
+            f"crawler{'s' if crawlers_length > 1 else ''}[/bold green]\n"
+        )
         for name, file_path, line_number in crawlers:
-            rich.print(f"[bold blue]{name}[/bold blue] -> {file_path}:{line_number}")
+            rich.print(
+                f"[bold blue]{name}[/bold blue] -> {file_path}:{line_number}"
+            )
     else:
         rich.print("[bold red]No crawlers found[/bold red]")
 
@@ -66,8 +78,10 @@ def run_crawler(
     crawler_name: Optional[str] = typer.Option(
         default=None,
         help=(
-            "Name of the crawler class to run. Provide it if the file contains multiple crawlers. "
-            "But if the file contains only one crawler, this argument is optional."
+            "Name of the crawler class to run. "
+            "Provide it if the file contains multiple crawlers. "
+            "But if the file contains only one crawler, "
+            "this argument is optional."
         ),
     ),
 ) -> None:
@@ -75,12 +89,14 @@ def run_crawler(
 
     Args:
         path (pathlib.Path): Path to the python file containing the crawler.
-        crawler_name (Optional[str]): Name of the crawler class to run. Default is None.
+        crawler_name (Optional[str]): Name of the crawler class to run.
+            Default is None.
 
     """
     if path.suffix != ".py":
         raise typer.BadParameter(
-            f"File '{path}' is not a python file. Please provide a valid python file.",
+            f"File '{path}' is not a python file. "
+            "Please provide a valid python file.",
             param_hint="path",
         )
 
@@ -109,7 +125,8 @@ def run_crawler(
             crawler_names = ", ".join([f"'{c.__name__}'" for c in crawlers])
             raise typer.BadParameter(
                 (
-                    f"You must specify a crawler name because '{path}' contains multiple crawlers. "
+                    f"You must specify a crawler name "
+                    f"because '{path}' contains multiple crawlers. "
                     f"Crawlers found: {crawler_names}."
                 ),
                 param_hint="--crawler-name",
@@ -139,7 +156,11 @@ def get_crawlers_from_file(file_path: pathlib.Path) -> list[Type[BaseCrawler]]:
 
     for attr_name in dir(module):
         attr = getattr(module, attr_name)
-        if isinstance(attr, type) and issubclass(attr, BaseCrawler) and not inspect.isabstract(attr):
+        if (
+            isinstance(attr, type)
+            and issubclass(attr, BaseCrawler)
+            and not inspect.isabstract(attr)
+        ):
             crawlers.append(attr)
 
     return crawlers

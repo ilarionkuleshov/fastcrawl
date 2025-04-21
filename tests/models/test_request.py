@@ -19,8 +19,11 @@ def test_str(method: str, url: str, convert_to_httpx_url: bool) -> None:
     Args:
         method (str): Method for the request.
         url (str): URL for the request.
-        convert_to_httpx_url (bool): Whether to convert the URL to an `httpx.URL` object.
+        convert_to_httpx_url (bool): Whether to convert the URL
+            to an `httpx.URL` object.
 
     """
-    request = create_request(method=method, url=URL(url) if convert_to_httpx_url else url)
+    request = create_request(
+        method=method, url=URL(url) if convert_to_httpx_url else url
+    )
     assert str(request) == f"<Request({method}, {url})>"

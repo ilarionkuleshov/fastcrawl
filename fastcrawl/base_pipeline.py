@@ -11,7 +11,8 @@ class BasePipeline(ABC):
 
     Attributes:
         allowed_items (Optional[list[type]]): Allowed types of items to process.
-            If provided, only items of these types will be processed and other items will be returned as is.
+            If provided, only items of these types will be processed
+            and other items will be returned as is.
             If not provided, all items will be processed. Default is None.
         logger (logging.Logger): Logger for the crawler.
 
@@ -32,7 +33,8 @@ class BasePipeline(ABC):
 
         Returns:
             Any: Processed item.
-            None: If the item should be dropped and not passed to the next pipelines.
+            None: If the item should be dropped
+                and not passed to the next pipelines.
 
         """
 
@@ -50,9 +52,12 @@ class BasePipeline(ABC):
 
         Returns:
             Any: Processed item.
-            None: If the item should be dropped and not passed to the next pipelines.
+            None: If the item should be dropped
+                and not passed to the next pipelines.
 
         """
-        if self.allowed_items is None or isinstance(item, tuple(self.allowed_items)):
+        if self.allowed_items is None or isinstance(
+            item, tuple(self.allowed_items)
+        ):
             return await self.process_item(item)
         return item

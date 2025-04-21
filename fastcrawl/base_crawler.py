@@ -21,7 +21,8 @@ class BaseCrawler(ABC):
 
     Attributes:
         logger (logging.Logger): Logger for the crawler.
-        settings (CrawlerSettings): Settings for the crawler. Override it to set custom settings.
+        settings (CrawlerSettings): Settings for the crawler.
+            Override it to set custom settings.
         stats (CrawlerStats): Statistics for the crawler.
 
     """
@@ -42,7 +43,9 @@ class BaseCrawler(ABC):
         self.logger = get_logger(self.__class__.__name__, self.settings.log)
         self.stats = CrawlerStats()
 
-        self._pipelines = [pipeline(self.settings.log) for pipeline in self.settings.pipelines]
+        self._pipelines = [
+            pipeline(self.settings.log) for pipeline in self.settings.pipelines
+        ]
         self._queue = asyncio.Queue()
         self._http_client = AsyncClient(**self._get_http_client_kwargs())
 
@@ -67,11 +70,16 @@ class BaseCrawler(ABC):
     async def generate_requests(self) -> AsyncIterator[Request]:
         """Yields requests to be processed."""
         if False:  # pylint: disable=W0125  # pragma: no cover
-            yield Request(url="https://example.com/", callback=lambda _: None)  # just a stub for mypy
+            yield Request(
+                url="https://example.com/", callback=lambda _: None
+            )  # just a stub for mypy
 
     async def run(self) -> None:
         """Runs the crawler."""
-        self.logger.info("Running crawler with settings: %s", self.settings.model_dump_json(indent=2))
+        self.logger.info(
+            "Running crawler with settings: %s",
+            self.settings.model_dump_json(indent=2),
+        )
         self.stats.start_crawling()
         await self.on_start()
         for pipeline in self._pipelines:
@@ -80,7 +88,10 @@ class BaseCrawler(ABC):
         async for request in self.generate_requests():
             await self._queue.put(request)
 
-        workers = [asyncio.create_task(self._worker()) for _ in range(self.settings.workers)]
+        workers = [
+            asyncio.create_task(self._worker())
+            for _ in range(self.settings.workers)
+        ]
         await self._queue.join()
         for worker in workers:
             worker.cancel()
@@ -91,7 +102,10 @@ class BaseCrawler(ABC):
         for pipeline in self._pipelines:
             await pipeline.on_finish()
         self.stats.finish_crawling()
-        self.logger.info("Crawling finished with stats: %s", self.stats.model_dump_json(indent=2))
+        self.logger.info(
+            "Crawling finished with stats: %s",
+            self.stats.model_dump_json(indent=2),
+        )
 
     async def _worker(self) -> None:
         while True:
@@ -99,7 +113,9 @@ class BaseCrawler(ABC):
             try:
                 await self._process_request(request)
             except Exception as exc:  # pylint: disable=W0718
-                self.logger.error("Error processing request %s: %s", request, exc)
+                self.logger.error(
+                    "Error processing request %s: %s", request, exc
+                )
             finally:
                 self._queue.task_done()
 
@@ -107,18 +123,31 @@ class BaseCrawler(ABC):
         self.logger.debug("Processing request: %s", request)
         self.stats.add_request()
 
-        httpx_response = await self._http_client.request(**self._get_request_kwargs(request))
+        httpx_response = await self._http_client.request(
+            **self._get_request_kwargs(request)
+        )
         response = await Response.from_httpx_response(httpx_response, request)
         self.logger.debug("Got response: %s", response)
         self.stats.add_response(response.status_code)
 
-        if httpx_response.is_success or response.status_code in self.settings.additional_success_status_codes:
-            callback_args = (response, request.callback_data) if request.callback_data else (response,)
+        if (
+            httpx_response.is_success
+            or response.status_code
+            in self.settings.additional_success_status_codes
+        ):
+            callback_args = (
+                (response, request.callback_data)
+                if request.callback_data
+                else (response,)
+            )
             result = request.callback(*callback_args)
         elif request.errback:
             result = request.errback(response)
         else:
-            self.logger.warning("Response not processed, cause no errback provided: %s", response)
+            self.logger.warning(
+                "Response not processed, cause no errback provided: %s",
+                response,
+            )
             return
 
         if hasattr(result, "__aiter__"):
@@ -136,7 +165,9 @@ class BaseCrawler(ABC):
             await result
 
     def _get_request_kwargs(self, request: Request) -> dict[str, Any]:
-        kwargs = request.model_dump(exclude_none=True, exclude={"callback", "callback_data", "errback"})
+        kwargs = request.model_dump(
+            exclude_none=True, exclude={"callback", "callback_data", "errback"}
+        )
         if "query_params" in kwargs:
             kwargs["params"] = kwargs.pop("query_params")
         if "form_data" in kwargs:

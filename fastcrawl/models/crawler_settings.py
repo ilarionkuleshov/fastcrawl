@@ -1,10 +1,10 @@
-from typing import Annotated
+from typing import Annotated, Type
 
 from dotenv import find_dotenv
 from pydantic.functional_serializers import PlainSerializer
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from fastcrawl.base_pipeline import BasePipeline
+from fastcrawl.core.base_pipeline import BasePipeline
 from fastcrawl.models.http_client_settings import HttpClientSettings
 from fastcrawl.models.log_settings import LogSettings
 
@@ -15,7 +15,7 @@ class CrawlerSettings(BaseSettings):
     Attributes:
         workers (int): Number of workers to process requests.
             Default is 15.
-        pipelines (list[type[BasePipeline]]): List of pipelines
+        pipelines (list[Type[BasePipeline]]): List of pipelines
             to process items. Pipelines will be executed in the order
             they are defined. Default is [].
         log (LogSettings): Log settings for the crawler.
@@ -30,7 +30,7 @@ class CrawlerSettings(BaseSettings):
 
     workers: int = 15
     pipelines: list[
-        Annotated[type[BasePipeline], PlainSerializer(lambda x: x.__name__)]
+        Annotated[Type[BasePipeline], PlainSerializer(lambda x: x.__name__)]
     ] = []
     log: LogSettings = LogSettings()
     http_client: HttpClientSettings = HttpClientSettings()

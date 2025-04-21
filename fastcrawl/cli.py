@@ -10,7 +10,7 @@ import rich
 import typer
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from fastcrawl.base_crawler import BaseCrawler
+from fastcrawl.core import BaseCrawler
 
 app = typer.Typer(
     name="FastCrawl",

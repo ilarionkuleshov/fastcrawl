@@ -9,7 +9,7 @@ from fastcrawl.models import CrawlerSettings, CrawlerStats, Request, Response
 from fastcrawl.utils.log import get_logger, setup_logging
 
 if TYPE_CHECKING:
-    from fastcrawl.base_pipeline import BasePipeline  # pragma: no cover
+    from fastcrawl.core.base_pipeline import BasePipeline  # pragma: no cover
 
 
 class BaseCrawler(ABC):

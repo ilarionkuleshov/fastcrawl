@@ -12,6 +12,7 @@ httpx = "^0.28.1"
 pydantic = "^2.10.4"
 parsel = "^1.9.1"
 pydantic-settings = "^2.7.0"
+typer = "^0.15.2"
 
 [tool.poetry.group.dev.dependencies]
 isort = "^5.13.2"

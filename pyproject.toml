@@ -7,7 +7,7 @@ readme = "README.md"
 license = "MIT"
 
 [tool.poetry.scripts]
-fastcrawl = "fastcrawl.cli:main"
+fastcrawl = "fastcrawl.cli:app"
 
 [tool.poetry.dependencies]
 python = "^3.9"

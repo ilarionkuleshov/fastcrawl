@@ -6,7 +6,7 @@ from fastcrawl import CrawlerStats
 
 
 def test_start_crawling_and_finish_crawling() -> None:
-    """Tests the `start_crawling` and `finish_crawling` methods."""
+    """Tests the `start_crawling` and `finish_crawling` methods of the `CrawlerStats` class."""
     stats = CrawlerStats()
     frozen_datetime = datetime(1, 1, 1)
 
@@ -19,7 +19,7 @@ def test_start_crawling_and_finish_crawling() -> None:
 
 
 def test_add_request() -> None:
-    """Tests the `add_request` method."""
+    """Tests the `add_request` method of the `CrawlerStats` class."""
     stats = CrawlerStats()
     stats.add_request()
     assert stats.requests == 1
@@ -28,7 +28,7 @@ def test_add_request() -> None:
 
 
 def test_add_response() -> None:
-    """Tests the `add_response` method."""
+    """Tests the `add_response` method of the `CrawlerStats` class."""
     stats = CrawlerStats()
     stats.add_response(200)
     assert stats.responses_by_codes == {200: 1}
@@ -39,7 +39,7 @@ def test_add_response() -> None:
 
 
 def test_add_item() -> None:
-    """Tests the `add_item` method."""
+    """Tests the `add_item` method of the `CrawlerStats` class."""
     stats = CrawlerStats()
     stats.add_item()
     assert stats.items == 1

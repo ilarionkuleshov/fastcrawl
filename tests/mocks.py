@@ -38,17 +38,13 @@ class MockStrDropPipeline(BasePipeline):
 
 
 def create_request(
-    url: Union[URL, str] = "https://example.com/",
-    callback: Callable = lambda _: None,
-    **kwargs,
+    url: Union[URL, str] = "https://example.com/", callback: Callable = lambda _: None, **kwargs
 ) -> Request:
     """Returns request instance.
 
     Args:
-        url (Union[URL, str]): URL for the request.
-            Default is "https://example.com/".
-        callback (Callable): Callback for the request.
-            Default is lambda _: None.
+        url (Union[URL, str]): URL for the request. Default is "https://example.com/".
+        callback (Callable): Callback for the request. Default is lambda _: None.
         **kwargs: Additional keyword arguments.
 
     """
@@ -71,8 +67,7 @@ def create_response(
         content (bytes): Content for the response. Default is b"".
         text (str): Text for the response. Default is "".
         request (Optional[Request]): Request instance for the response.
-            If not provided, a new request instance will be created.
-            Default is None.
+            If not provided, a new request instance will be created. Default is None.
         **kwargs: Additional keyword arguments.
 
     """
@@ -88,15 +83,12 @@ def create_response(
     )
 
 
-def create_httpx_request(
-    method: str = "GET", url: Union[URL, str] = "https://example.com/", **kwargs
-) -> HttpxRequest:
+def create_httpx_request(method: str = "GET", url: Union[URL, str] = "https://example.com/", **kwargs) -> HttpxRequest:
     """Returns httpx request instance.
 
     Args:
         method (str): HTTP method for the request. Default is "GET".
-        url (Union[URL, str]): URL for the request.
-            Default is "https://example.com/".
+        url (Union[URL, str]): URL for the request. Default is "https://example.com/".
         **kwargs: Additional keyword arguments.
 
     """
@@ -104,17 +96,14 @@ def create_httpx_request(
 
 
 def create_httpx_response(
-    status_code: int = 200,
-    httpx_request: Optional[HttpxRequest] = None,
-    **kwargs,
+    status_code: int = 200, httpx_request: Optional[HttpxRequest] = None, **kwargs
 ) -> HttpxResponse:
     """Returns httpx response instance.
 
     Args:
         status_code (int): Status code for the response. Default is 200.
-        httpx_request (Optional[HttpxRequest]): Httpx request instance
-            for the response. If not provided, a new httpx request instance
-            will be created. Default is None.
+        httpx_request (Optional[HttpxRequest]): Httpx request instance for the response.
+            If not provided, a new httpx request instance will be created. Default is None.
         **kwargs: Additional keyword arguments.
 
     """

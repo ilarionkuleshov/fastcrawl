@@ -18,10 +18,8 @@ class Response(BaseModel):
         status_code (int): Status code of the response.
         content (bytes): Content of the response.
         text (str): Text of the response.
-        headers (Optional[dict[str, str]]): Headers of the response.
-            Default is None.
-        cookies (Optional[dict[str, str]]): Cookies of the response.
-            Default is None.
+        headers (Optional[dict[str, str]]): Headers of the response. Default is None.
+        cookies (Optional[dict[str, str]]): Cookies of the response. Default is None.
         request (Request): Request used to fetch the response.
 
     """
@@ -38,9 +36,7 @@ class Response(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @classmethod
-    async def from_httpx_response(
-        cls, httpx_response: HttpxResponse, request: Request
-    ) -> "Response":
+    async def from_httpx_response(cls, httpx_response: HttpxResponse, request: Request) -> "Response":
         """Returns new instance from an httpx response.
 
         Args:

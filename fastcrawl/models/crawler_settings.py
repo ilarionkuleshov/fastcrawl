@@ -13,25 +13,18 @@ class CrawlerSettings(BaseSettings):
     """Crawler settings model.
 
     Attributes:
-        workers (int): Number of workers to process requests.
-            Default is 15.
-        pipelines (list[type[BasePipeline]]): List of pipelines
-            to process items. Pipelines will be executed in the order
-            they are defined. Default is [].
-        log (LogSettings): Log settings for the crawler.
-            Default is LogSettings().
-        http_client (HttpClientSettings): HTTP client settings for the crawler.
-            Default is HttpClientSettings().
-        additional_success_status_codes (list[int]): List of additional response
-            status codes which will be processed as success responses
-            in callbacks (200-299 already included). Default is [].
+        workers (int): Number of workers to process requests. Default is 15.
+        pipelines (list[type[BasePipeline]]): List of pipelines to process items.
+            Pipelines will be executed in the order they are defined. Default is [].
+        log (LogSettings): Log settings for the crawler. Default is LogSettings().
+        http_client (HttpClientSettings): HTTP client settings for the crawler. Default is HttpClientSettings().
+        additional_success_status_codes (list[int]): List of additional response status codes which will be
+            processed as success responses in callbacks (200-299 already included). Default is [].
 
     """
 
     workers: int = 15
-    pipelines: list[
-        Annotated[type[BasePipeline], PlainSerializer(lambda x: x.__name__)]
-    ] = []
+    pipelines: list[Annotated[type[BasePipeline], PlainSerializer(lambda x: x.__name__)]] = []
     log: LogSettings = LogSettings()
     http_client: HttpClientSettings = HttpClientSettings()
     additional_success_status_codes: list[int] = []

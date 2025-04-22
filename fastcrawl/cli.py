@@ -32,7 +32,7 @@ def list_crawlers(
             If not provided, current working directory is used.
 
     """
-    sys.path.append(str(pathlib.Path.cwd()))
+    insert_cwd_to_sys_path()
 
     crawlers = []
 
@@ -80,7 +80,7 @@ def run_crawler(
         crawler_name (Optional[str]): Name of the crawler class to run. Default is None.
 
     """
-    sys.path.append(str(pathlib.Path.cwd()))
+    insert_cwd_to_sys_path()
 
     if path.suffix != ".py":
         raise typer.BadParameter(
@@ -147,6 +147,13 @@ def get_crawlers_from_file(file_path: pathlib.Path) -> list[Type[BaseCrawler]]:
             crawlers.append(attr)
 
     return crawlers
+
+
+def insert_cwd_to_sys_path() -> None:
+    """Inserts the current working directory to `sys.path`."""
+    current_dir = str(pathlib.Path.cwd())
+    if current_dir not in sys.path:
+        sys.path.insert(0, current_dir)
 
 
 if __name__ == "__main__":

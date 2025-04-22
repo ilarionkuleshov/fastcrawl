@@ -32,6 +32,8 @@ def list_crawlers(
             If not provided, current working directory is used.
 
     """
+    sys.path.append(str(pathlib.Path.cwd()))
+
     crawlers = []
 
     with Progress(
@@ -78,6 +80,8 @@ def run_crawler(
         crawler_name (Optional[str]): Name of the crawler class to run. Default is None.
 
     """
+    sys.path.append(str(pathlib.Path.cwd()))
+
     if path.suffix != ".py":
         raise typer.BadParameter(
             f"File '{path}' is not a python file. Please provide a valid python file.",

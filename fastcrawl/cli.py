@@ -145,5 +145,10 @@ def get_crawlers_from_file(file_path: pathlib.Path) -> list[Type[BaseCrawler]]:
     return crawlers
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Runs the FastCrawl CLI."""
     app()
+
+
+if __name__ == "__main__":
+    main()

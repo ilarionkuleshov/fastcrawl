@@ -4,7 +4,7 @@ import inspect
 import pathlib
 import sys
 import uuid
-from typing import Optional, Type
+from typing import Any, Dict, List, Optional, Type
 
 import rich
 import typer
@@ -72,12 +72,19 @@ def run_crawler(
             "But if the file contains only one crawler, this argument is optional."
         ),
     ),
+    init_argument: Optional[List[str]] = typer.Option(
+        None,
+        "--init-argument",
+        "-i",
+        help="Initialization argument for the crawler in format key=value.",
+    ),
 ) -> None:
     """Runs a specific crawler from the provided python file.
 
     Args:
         path (pathlib.Path): Path to the python file containing the crawler.
         crawler_name (Optional[str]): Name of the crawler class to run. Default is None.
+        init_argument (Optional[List[str]]): Initialization argument for the crawler. Default is None.
 
     """
     insert_cwd_to_sys_path()
@@ -121,10 +128,21 @@ def run_crawler(
         crawler_to_run = crawlers[0]
 
     rich.print(f"[bold green]Running {crawler_to_run.__name__}...[/bold green]")
-    asyncio.run(crawler_to_run().run())
+
+    kwargs: Dict[str, Any] = {}
+    for arg in init_argument or []:
+        try:
+            key, value = arg.split("=")
+            kwargs[key] = value
+        except ValueError as err:
+            raise typer.BadParameter(
+                f"Invalid format '{arg}'. Expected format: key=value.",
+                param_hint="--init-argument",
+            ) from err
+    asyncio.run(crawler_to_run(**kwargs).run())
 
 
-def get_crawlers_from_file(file_path: pathlib.Path) -> list[Type[BaseCrawler]]:
+def get_crawlers_from_file(file_path: pathlib.Path) -> List[Type[BaseCrawler]]:
     """Returns a list of crawlers from the provided python file.
 
     Args:

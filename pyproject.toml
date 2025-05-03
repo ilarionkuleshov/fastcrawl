@@ -1,40 +1,37 @@
-[tool.poetry]
+[project]
 name = "fastcrawl"
 version = "0.6.1"
 description = "Fast and asynchronous web crawling and scraping library for Python."
-authors = ["ilarionkuleshov <ilarion.kuleshov@gmail.com>"]
 readme = "README.md"
 license = "MIT"
+authors = [
+    { name = "ilarionkuleshov", email = "ilarion.kuleshov@gmail.com" }
+]
+requires-python = ">=3.9, <3.14"
+dependencies = [
+    "httpx>=0.28.1",
+    "parsel>=1.10.0",
+    "pydantic>=2.11.4",
+    "pydantic-settings>=2.9.1",
+    "typer>=0.15.3",
+]
 
-[tool.poetry.scripts]
-fastcrawl = "fastcrawl.cli:app"
-
-[tool.poetry.dependencies]
-python = "^3.9"
-httpx = "^0.28.1"
-pydantic = "^2.10.4"
-parsel = "^1.9.1"
-pydantic-settings = "^2.7.0"
-typer = "^0.15.2"
-
-[tool.poetry.group.dev.dependencies]
-isort = "^5.13.2"
-autoflake = "^2.3.1"
-black = "^24.10.0"
-flake8 = "^7.1.1"
-flake8-pyproject = "^1.2.3"
-pylint = "^3.3.3"
-mypy = "^1.14.0"
-pytest = "^8.3.4"
-pytest-asyncio = "^0.25.0"
-coverage = "^7.6.10"
-freezegun = "^1.5.1"
-pytest-httpx = "^0.35.0"
-smokeshow = "^0.4.0"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[dependency-groups]
+dev = [
+    "autoflake>=2.3.1",
+    "black>=25.1.0",
+    "coverage>=7.8.0",
+    "flake8>=7.2.0",
+    "flake8-pyproject>=1.2.3",
+    "freezegun>=1.5.1",
+    "isort>=6.0.1",
+    "mypy>=1.15.0",
+    "pylint>=3.3.6",
+    "pytest>=8.3.5",
+    "pytest-asyncio>=0.26.0",
+    "pytest-httpx>=0.35.0",
+    "smokeshow>=0.5.0",
+]
 
 [tool.isort]
 profile = "black"

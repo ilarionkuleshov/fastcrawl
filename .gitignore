@@ -1,5 +1,9 @@
+.venv/
 __pycache__/
 .mypy_cache/
 .pytest_cache/
+dist/
+fastcrawl.egg-info/
+
 .coverage_html
 .coverage

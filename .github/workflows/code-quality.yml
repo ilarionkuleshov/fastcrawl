@@ -21,27 +21,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup python
-        uses: actions/setup-python@v5
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v5
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Setup poetry
-        uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: latest
-
       - name: Install dependencies
-        run: poetry install
+        run: uv sync --locked --all-extras
 
       - name: Lint code
-        run: poetry run bash ./scripts/lint.sh
+        run: uv run ./scripts/lint.sh
 
       - name: Create coverage directory
         run: mkdir coverage
 
       - name: Run tests
-        run: poetry run bash ./scripts/test.sh --generate-html-report=false --coverage-file=coverage/.coverage.${{ runner.os }}-py${{ matrix.python-version }}
+        run: uv run ./scripts/test.sh --generate-html-report=false --coverage-file=coverage/.coverage.${{ runner.os }}-py${{ matrix.python-version }}
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
@@ -66,27 +61,22 @@ jobs:
           path: coverage
           merge-multiple: true
 
-      - name: Setup python
-        uses: actions/setup-python@v5
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v5
         with:
           python-version: 3.12
 
-      - name: Setup poetry
-        uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: latest
-
       - name: Install dependencies
-        run: poetry install
+        run: uv sync --locked --all-extras
 
       - name: Combine coverage
-        run: poetry run coverage combine coverage
+        run: uv run coverage combine coverage
 
       - name: Show report summary
-        run: poetry run coverage report
+        run: uv run coverage report
 
       - name: Generate report
-        run: poetry run coverage html --title "Coverage for ${{ github.sha }}"
+        run: uv run coverage html --title "Coverage for ${{ github.sha }}"
 
       - name: Upload report artifact
         uses: actions/upload-artifact@v4

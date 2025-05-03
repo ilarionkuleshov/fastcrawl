@@ -14,24 +14,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup python
-        uses: actions/setup-python@v5
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v5
         with:
           python-version: 3.12
 
-      - name: Setup poetry
-        uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: latest
-
       - name: Install dependencies
-        run: poetry install --without dev
+        run: uv sync --locked --no-dev
 
       - name: Build project
-        run: poetry build
-
-      - name: Configure pypi token
-        run: poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
+        run: uv build
 
       - name: Publish to pypi
-        run: poetry publish
+        run: uv publish --token ${{ secrets.PYPI_TOKEN }}

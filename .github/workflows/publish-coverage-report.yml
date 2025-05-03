@@ -27,21 +27,16 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
 
-      - name: Setup python
-        uses: actions/setup-python@v5
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v5
         with:
           python-version: 3.12
 
-      - name: Setup poetry
-        uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: latest
-
       - name: Install dependencies
-        run: poetry install
+        run: uv sync --locked --all-extras
 
       - name: Publish report
-        run: poetry run smokeshow upload .coverage_html
+        run: uv run smokeshow upload .coverage_html
         env:
           SMOKESHOW_GITHUB_STATUS_DESCRIPTION: Coverage {coverage-percentage}
           SMOKESHOW_GITHUB_COVERAGE_THRESHOLD: 90

@@ -1,57 +1,38 @@
 import json
 from typing import Any, Optional
 
-from httpx import URL
-from httpx import Response as HttpxResponse
-from httpx import ResponseNotRead
-from parsel import Selector
+import httpx
+import parsel
 from pydantic import BaseModel, ConfigDict, PrivateAttr
 
 from fastcrawl.models.request import Request
 
 
 class Response(BaseModel):
-    """Response model.
 
-    Attributes:
-        url (URL): URL of the response.
-        status_code (int): Status code of the response.
-        content (bytes): Content of the response.
-        text (str): Text of the response.
-        headers (Optional[dict[str, str]]): Headers of the response. Default is None.
-        cookies (Optional[dict[str, str]]): Cookies of the response. Default is None.
-        request (Request): Request used to fetch the response.
-
-    """
-
-    url: URL
+    url: httpx.URL
     status_code: int
+    is_success: bool
     content: bytes
     text: str
     headers: Optional[dict[str, str]] = None
     cookies: Optional[dict[str, str]] = None
     request: Request
-    _cached_selector: Optional[Selector] = PrivateAttr(default=None)
+    _cached_selector: Optional[parsel.Selector] = PrivateAttr(default=None)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @classmethod
-    async def from_httpx_response(cls, httpx_response: HttpxResponse, request: Request) -> "Response":
-        """Returns new instance from an httpx response.
-
-        Args:
-            httpx_response (HttpxResponse): Response from httpx.
-            request (Request): Request used to fetch the response.
-
-        """
+    async def from_httpx_response(cls, httpx_response: httpx.Response, request: Request) -> "Response":
         try:
             content = httpx_response.content
-        except ResponseNotRead:
+        except httpx.ResponseNotRead:
             content = await httpx_response.aread()
 
         return cls(
             url=httpx_response.url,
             status_code=httpx_response.status_code,
+            is_success=httpx_response.is_success,
             content=content,
             text=httpx_response.text,
             headers=dict(httpx_response.headers),
@@ -60,14 +41,12 @@ class Response(BaseModel):
         )
 
     def get_json_data(self) -> Any:
-        """Returns JSON data from the response."""
         return json.loads(self.text)
 
     @property
-    def selector(self) -> Selector:
-        """Selector for xpath and css queries."""
+    def selector(self) -> parsel.Selector:
         if self._cached_selector is None:
-            self._cached_selector = Selector(text=self.text)
+            self._cached_selector = parsel.Selector(text=self.text)
         return self._cached_selector
 
     def __str__(self) -> str:

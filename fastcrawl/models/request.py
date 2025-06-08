@@ -1,54 +1,23 @@
-from typing import Any, Optional, Union
+from typing import Callable, Optional, Union
 
-from httpx import URL
+import httpx
 from pydantic import BaseModel, ConfigDict
 
-from fastcrawl.types import (
-    Auth,
-    Cookies,
-    Files,
-    FormData,
-    Headers,
-    JsonData,
-    QueryParams,
-    RequestCallback,
-    RequestErrback,
-)
+from fastcrawl import types_
 
 
 class Request(BaseModel):
-    """Request model.
-
-    Attributes:
-        method (str): HTTP method. Default is "GET".
-        url (Union[URL, str]): URL to request.
-        callback (RequestCallback): Callback to process the response.
-        callback_data (Optional[Any]): Data to pass to the callback. Default is None.
-        errback (Optional[RequestErrback]): Errback to process the error. Default is None.
-        query_params (Optional[QueryParams]): Query parameters for the URL. Default is None.
-        headers (Optional[Headers]): Headers for the request. Default is None.
-        cookies (Optional[Cookies]): Cookies for the request. Default is None.
-        form_data (Optional[FormData]): Form data for the request. Default is None.
-        json_data (Optional[JsonData]): JSON data for the request. Default is None.
-        files (Optional[Files]): Files for the request. Default is None.
-        auth (Optional[Auth]): Authentication credentials. Default is None.
-        timeout (Optional[float]): Timeout for the request in seconds. Default is None.
-        follow_redirects (Optional[bool]): Whether to follow redirects. Default is None.
-
-    """
 
     method: str = "GET"
-    url: Union[URL, str]
-    callback: RequestCallback
-    callback_data: Optional[Any] = None
-    errback: Optional[RequestErrback] = None
-    query_params: Optional[QueryParams] = None
-    headers: Optional[Headers] = None
-    cookies: Optional[Cookies] = None
-    form_data: Optional[FormData] = None
-    json_data: Optional[JsonData] = None
-    files: Optional[Files] = None
-    auth: Optional[Auth] = None
+    url: Union[httpx.URL, str]
+    handler: Callable
+    query_params: Optional[types_.QueryParams] = None
+    headers: Optional[types_.Headers] = None
+    cookies: Optional[types_.Cookies] = None
+    form_data: Optional[types_.FormData] = None
+    json_data: Optional[types_.JsonData] = None
+    files: Optional[types_.Files] = None
+    auth: Optional[types_.Auth] = None
     timeout: Optional[float] = None
     follow_redirects: Optional[bool] = None
 

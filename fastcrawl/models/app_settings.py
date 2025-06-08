@@ -6,7 +6,6 @@ from fastcrawl.models.log_settings import LogSettings
 
 
 class AppSettings(BaseSettings):
-
     workers: int = 15
     log: LogSettings = LogSettings()
     http: HttpSettings = HttpSettings()

@@ -7,7 +7,6 @@ from fastcrawl.core.crawl_base import CrawlBase
 
 
 class FastCrawl(CrawlBase):
-
     _task_queue: asyncio.Queue
 
     def __init__(self, name: str = "FastCrawl", settings: Optional[models.AppSettings] = None) -> None:

@@ -1,24 +1,11 @@
-#!/bin/bash
 set -e
 
-packages=("fastcrawl/" "tests/")
+echo "Ruff formatting..."
+ruff format fastcrawl/
+ruff check fastcrawl/ --select I --fix
+ruff check fastcrawl/
+ruff format tests/
+ruff check tests/ --select I --fix
 
-for package in "${packages[@]}"; do
-    echo "Isort formatting for $package package..."
-    isort $package
-
-    echo "Autoflake formatting for $package package..."
-    autoflake $package
-
-    echo "Black formatting for $package package..."
-    black $package
-
-    echo "Flake8 checking for $package package..."
-    flake8 $package
-
-    echo "Pylint checking for $package package..."
-    pylint $package
-
-    echo "Mypy checking for $package package..."
-    mypy $package
-done
+echo "Mypy checking..."
+mypy fastcrawl/

@@ -7,7 +7,6 @@ from typing import Any, Callable, Dict, Iterator, Tuple, Type, Union, get_type_h
 
 @dataclasses.dataclass
 class ReturnType:
-
     func_name: str
     is_iterator: bool
     expected_types: Tuple[Type, ...]
@@ -30,14 +29,13 @@ def validate_return_value(return_type: ReturnType, value: Any) -> Iterator[Any]:
     else:
         if not isinstance(value, return_type.expected_types):
             raise TypeError(
-                f"Function `{return_type.func_name}` returned an invalid item {type(item)}, "
+                f"Function `{return_type.func_name}` returned an invalid item {type(value)}, "
                 f"expected one of {return_type.expected_types}."
             )
         yield value
 
 
 class TypeValidator:
-
     func_name: str
     type_hints: Dict[str, Any]
 
@@ -53,7 +51,7 @@ class TypeValidator:
             )
         return arg
 
-    def validate_return_type(self, expected_types: Tuple[Type], can_be_iterator: bool) -> ReturnType:
+    def validate_return_type(self, expected_types: Tuple[Type, ...], can_be_iterator: bool) -> ReturnType:
         return_type = self.type_hints.get("return")
 
         if return_type is None or return_type is type(None):
@@ -74,7 +72,7 @@ class TypeValidator:
         return ReturnType(func_name=self.func_name, is_iterator=is_iterator, expected_types=return_types)
 
     def _is_valid_return_type(
-        self, return_type: Any, expected_types: Tuple[Type], can_be_iterator: bool = False
+        self, return_type: Any, expected_types: Tuple[Type, ...], can_be_iterator: bool = False
     ) -> Tuple[bool | None, Tuple[Type] | None]:
         if self._is_valid_type(return_type, expected_types):
             return False, (return_type,)
@@ -91,5 +89,5 @@ class TypeValidator:
 
         return None, None
 
-    def _is_valid_type(self, actual_type: Any, expected_types: Tuple[Type]) -> bool:
+    def _is_valid_type(self, actual_type: Any, expected_types: Tuple[Type, ...]) -> bool:
         return inspect.isclass(actual_type) and issubclass(actual_type, expected_types)

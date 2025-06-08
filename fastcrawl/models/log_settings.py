@@ -5,7 +5,6 @@ from pydantic import BaseModel
 
 
 class LogSettings(BaseModel):
-
     configure_globally: bool = True
     level: str = "INFO"
     logger_name_suffix: Optional[str] = None

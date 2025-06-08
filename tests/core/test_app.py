@@ -7,6 +7,7 @@ def test_handler_without_annotations():
     app = FastCrawl()
 
     with pytest.raises(TypeError):
+
         @app.handler()
         def my_handler(response):
             pass
@@ -16,6 +17,7 @@ def test_handler_without_response_arg():
     app = FastCrawl()
 
     with pytest.raises(TypeError):
+
         @app.handler()
         def my_handler():
             pass
@@ -25,6 +27,7 @@ def test_handler_with_invalid_response_arg():
     app = FastCrawl()
 
     with pytest.raises(TypeError):
+
         @app.handler()
         def my_handler(response: str):
             pass
@@ -34,6 +37,7 @@ def test_handler_with_invalid_return_type():
     app = FastCrawl()
 
     with pytest.raises(TypeError):
+
         @app.handler()
         def my_handler(response: Response) -> str:
             pass
@@ -43,6 +47,7 @@ def test_handler_urls_type_error():
     app = FastCrawl()
 
     with pytest.raises(TypeError):
+
         @app.handler(123)
         def my_handler(response: Response):
             pass

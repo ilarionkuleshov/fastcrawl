@@ -18,41 +18,28 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "autoflake>=2.3.1",
-    "black>=25.1.0",
     "coverage>=7.8.0",
-    "flake8>=7.2.0",
-    "flake8-pyproject>=1.2.3",
     "freezegun>=1.5.1",
-    "isort>=6.0.1",
     "mypy>=1.15.0",
-    "pylint>=3.3.6",
     "pytest>=8.3.5",
     "pytest-asyncio>=0.26.0",
     "pytest-httpx>=0.35.0",
+    "ruff>=0.11.13",
     "smokeshow>=0.5.0",
 ]
 
-[tool.isort]
-profile = "black"
-
-[tool.autoflake]
-remove-all-unused-imports = true
-recursive = true
-remove-unused-variables = true
-ignore-init-module-imports = true
-in-place = true
-
-[tool.black]
+[tool.ruff]
 line-length = 120
 
-[tool.flake8]
-max-line-length = 120
-per-file-ignores = "__init__.py:F401"
+[tool.ruff.format]
+quote-style = "double"
 
-[tool.pylint]
-max-line-length = 120
-disable="C0114"
+[tool.ruff.lint]
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
 
 [tool.coverage.html]
 directory = ".coverage_html"

@@ -12,7 +12,6 @@ from fastcrawl.core.component import Component
 
 
 class CrawlBase(abc.ABC):
-
     name: str
     settings: models.AppSettings
     logger: logging.Logger

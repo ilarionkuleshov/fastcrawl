@@ -7,7 +7,6 @@ from fastcrawl import types_
 
 
 class Request(BaseModel):
-
     method: str = "GET"
     url: Union[httpx.URL, str]
     handler: Callable

@@ -9,7 +9,6 @@ from fastcrawl.models.request import Request
 
 
 class Response(BaseModel):
-
     url: httpx.URL
     status_code: int
     is_success: bool

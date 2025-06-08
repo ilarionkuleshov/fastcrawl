@@ -7,7 +7,6 @@ from fastcrawl import types_
 
 
 class HttpSettings(BaseModel):
-
     base_url: Union[httpx.URL, str] = ""
     auth: Optional[types_.Auth] = None
     query_params: Optional[types_.QueryParams] = None

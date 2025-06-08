@@ -4,7 +4,6 @@ from fastcrawl.core import type_validation
 
 
 class Component:
-
     func: Callable
     return_type: type_validation.ReturnType
 

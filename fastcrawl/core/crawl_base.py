@@ -75,7 +75,7 @@ class CrawlBase(abc.ABC):
             )
             self._handlers[func] = Component(func=func, arg_type=models.Response, return_type=return_type)
             for url_ in url:
-                if not isinstance(url, str):
+                if not isinstance(url_, str):
                     raise TypeError(f"URL must be a string, got {type(url_)}")
                 self._start_tasks.append(models.Request(url=url_, handler=func))
             return func

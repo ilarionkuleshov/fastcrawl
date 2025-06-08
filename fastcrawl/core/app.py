@@ -7,10 +7,19 @@ from fastcrawl.core.crawl_base import CrawlBase
 
 
 class FastCrawl(CrawlBase):
+    """FastCrawl application.
+
+    Args:
+        name (str): Name of the application. Defaults to "FastCrawl".
+        settings (Optional[models.Settings]): Application settings.
+            If not provided, default settings are used. Defaults to None.
+
+    """
+
     _task_queue: asyncio.Queue
 
-    def __init__(self, name: str = "FastCrawl", settings: Optional[models.AppSettings] = None) -> None:
-        settings = settings or models.AppSettings()
+    def __init__(self, name: str = "FastCrawl", settings: Optional[models.Settings] = None) -> None:
+        settings = settings or models.Settings()
         self._setup_logging(settings.log)
 
         super().__init__(name=name, settings=settings)
@@ -25,6 +34,7 @@ class FastCrawl(CrawlBase):
         logging.getLogger("httpcore").setLevel(settings.level_httpcore)
 
     async def run(self) -> None:
+        """Runs the FastCrawl application."""
         for task in self._start_tasks:
             await self._task_queue.put(task)
 
@@ -46,7 +56,7 @@ class FastCrawl(CrawlBase):
 
     async def _process_task(self, task: Any) -> None:
         if isinstance(task, models.Request):
-            await self._task_queue.put(await self._fetch_request(task))
+            await self._task_queue.put(await self._process_request(task))
         elif isinstance(task, models.Response):
             for new_task in self._process_response(task):
                 await self._task_queue.put(new_task)

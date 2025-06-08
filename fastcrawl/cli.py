@@ -20,21 +20,32 @@ def run_crawler(
         help="Path to python file containing the FastCrawl application to run.",
     ),
 ) -> None:
-    # insert_cwd_to_sys_path()
+    """Runs the FastCrawl application defined in the specified python file.
 
+    The python file should define an instance of `FastCrawl` named `app`.
+
+    Args:
+        path (pathlib.Path): Path to the python file containing the FastCrawl application.
+
+    """
     if path.suffix != ".py":
         raise typer.BadParameter(
             f"File '{path}' is not a python file. Please provide a valid python file.",
             param_hint="path",
         )
+    fastcrawl_app = import_app_from_module(path)
 
-    app = import_app_from_module(path)
-
-    rich.print(f"[bold green]Running app {app.name}...[/bold green]")
-    asyncio.run(app.run())
+    rich.print(f"[bold green]Running app {fastcrawl_app.name}...[/bold green]")
+    asyncio.run(fastcrawl_app.run())
 
 
 def import_app_from_module(path: pathlib.Path) -> FastCrawl:
+    """Returns imported FastCrawl application from a python file.
+
+    Args:
+        path (pathlib.Path): Path to the python file containing the FastCrawl application.
+
+    """
     module_name = path.stem
     spec = importlib.util.spec_from_file_location(module_name, path)
     if spec is None or spec.loader is None:
@@ -44,16 +55,10 @@ def import_app_from_module(path: pathlib.Path) -> FastCrawl:
     spec.loader.exec_module(module)
     if not hasattr(module, "app"):
         raise AttributeError(f"Module '{module_name}' does not have attribute 'app'")
-    app = getattr(module, "app")
-    if not isinstance(app, FastCrawl):
+    fastcrawl_app = getattr(module, "app")
+    if not isinstance(fastcrawl_app, FastCrawl):
         raise TypeError(f"Attribute 'app' in module '{module_name}' is not an instance of FastCrawl")
-    return app
-
-
-def insert_cwd_to_sys_path() -> None:
-    current_dir = str(pathlib.Path.cwd())
-    if current_dir not in sys.path:
-        sys.path.insert(0, current_dir)
+    return fastcrawl_app
 
 
 if __name__ == "__main__":

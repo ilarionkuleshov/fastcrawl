@@ -43,7 +43,7 @@ def test_handler_with_invalid_return_type():
             pass
 
 
-def test_handler_urls_type_error():
+def test_handler_with_invalid_url():
     app = FastCrawl()
 
     with pytest.raises(TypeError):

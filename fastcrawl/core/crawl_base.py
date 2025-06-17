@@ -50,7 +50,7 @@ class CrawlBase(abc.ABC):
         )
         return kwargs
 
-    def handler(self, *url: str) -> Callable:
+    def handler(self, *urls: str) -> Callable:
         """Handler that processes HTTP responses.
 
         Requirements for each handler:
@@ -61,7 +61,7 @@ class CrawlBase(abc.ABC):
             - Requests must be instances of `fastcrawl.Request`.
 
         Args:
-            url (str): URL(s) to handle. Can be a single string or multiple strings.
+            urls (str): URLs to handle. Can be a single string or multiple strings.
                 If provided, URLs will be used to create initial requests
                 and will be processed by the handler.
 
@@ -74,10 +74,10 @@ class CrawlBase(abc.ABC):
                 (pydantic.BaseModel, models.Request, type(None)), can_be_iterator=True
             )
             self._handlers[func] = Component(func=func, arg_type=models.Response, return_type=return_type)
-            for url_ in url:
-                if not isinstance(url_, str):
-                    raise TypeError(f"URL must be a string, got {type(url_)}")
-                self._start_tasks.append(models.Request(url=url_, handler=func))
+            for url in urls:
+                if not isinstance(url, str):
+                    raise TypeError(f"URL must be a string, got {type(url)}")
+                self._start_tasks.append(models.Request(url=url, handler=func))
             return func
 
         return decorator

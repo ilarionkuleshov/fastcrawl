@@ -65,6 +65,9 @@ class CrawlBase(abc.ABC):
                 If provided, URLs will be used to create initial requests
                 and will be processed by the handler.
 
+        Raises:
+            TypeError: If any URL is not a string.
+
         """
 
         def decorator(func: Callable) -> Callable:
@@ -97,11 +100,14 @@ class CrawlBase(abc.ABC):
                 Must be a non-negative integer. If not provided, the pipeline
                 will be added to the end of the list. Defaults to None.
 
+        Raises:
+            TypeError: If priority is not a non-negative integer.
+
         """
 
         def decorator(func: Callable) -> Callable:
             if priority is not None and (not isinstance(priority, int) or priority < 0):
-                raise ValueError("Priority must be a non-negative integer.")
+                raise TypeError("Priority must be a non-negative integer.")
 
             validator = type_validation.TypeValidator(func)
             item_type = validator.validate_required_arg("item", pydantic.BaseModel)
@@ -140,5 +146,5 @@ class CrawlBase(abc.ABC):
             if not pipeline.is_valid_arg(processed_item):
                 continue
             processed_item = pipeline.run(item=processed_item)
-            if not item:
+            if not processed_item:
                 break
